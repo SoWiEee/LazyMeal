@@ -140,8 +140,6 @@ backend/
 * Method：`GET`
 * Description：在所有符合查詢參數篩選條件的餐廳中，隨機返回一家餐廳。
 
-**Query Parameters**
-
 **成功回應 (200 OK)**
 
 ```json
@@ -185,7 +183,10 @@ backend/
 * Description：根據餐廳的 UUID 獲取其詳細資訊。
 
 **URL Parameters**
-* id (string, 必填): 餐廳的 UUID。
+
+| 參數   | 說明           |
+|-------|----------------|
+| id    | 餐廳的 UUID     |
 
 **成功回應 (200 OK)**
  (同隨機選擇餐廳的 JSON 格式)
@@ -213,7 +214,10 @@ backend/
 * Description：更新指定 ID 餐廳的資訊。通常用於管理後台。
 
 **URL Parameters**
-* id (string, 必填): 餐廳的 UUID。
+
+| 參數   | 說明           |
+|-------|----------------|
+| id    | 餐廳的 UUID     |
 
 **Request Body**
 
