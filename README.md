@@ -441,6 +441,34 @@ backend/
 
 # Data Model
 
+## Restaurant 模型
+* 儲存餐廳的基本資訊，來自 Google Maps 或手動新增。
 
+```
+id: String (UUID), 主鍵
+name: String, 餐廳名稱
+cuisine: String[], 菜系 (例如 ["中式", "小吃"])
+priceRange: String, 價格範圍 (例如 "低", "中", "高")
+latitude: Float, 緯度
+longitude: Float, 經度
+address: String?, 地址
+phone: String?, 電話
+googlePlaceId: String? @unique, Google Maps Place ID (如果有，用於關聯)
+rating: Float?, Google Maps 評價星數
+userRatingsTotal: Int?, Google Maps 評價總數
+createdAt: DateTime, 創建時間
+updatedAt: DateTime, 最後更新時間
+```
 
+## UserRestaurant 模型 (口袋名單關聯表)
+* 記錄哪個使用者收藏了哪個餐廳，是 User 和 Restaurant 之間的關聯。
 
+```
+id: String (UUID), 主鍵
+userId: String, 關聯的使用者 ID
+restaurantId: String, 關聯的餐廳 ID
+addedAt: DateTime, 添加到口袋名單的時間
+user: User @relation, 與 User 模型的多對一關係
+restaurant: Restaurant @relation, 與 Restaurant 模型的多對一關係
+@@unique([userId, restaurantId]): 複合唯一索引，確保同一使用者不會重複收藏同一餐廳。
+```
