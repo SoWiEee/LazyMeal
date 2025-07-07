@@ -249,7 +249,10 @@ backend/
 * Description：刪除指定 ID 的餐廳。通常用於管理後台。
 
 **URL Parameters**
-* id (string, 必填): 餐廳的 UUID。
+
+| 參數   | 說明           |
+|-------|----------------|
+| id    | 餐廳的 UUID     |
 
 **成功回應 (204 No Content)**: (No response body)
 
@@ -273,24 +276,37 @@ backend/
 * Description：根據使用者輸入的關鍵字和當前位置，向 Google Places API 發送搜尋請求，並返回相關餐廳列表。
 
 **Query Parameters**
-* query (string, 必填): 餐廳名稱或關鍵字。
-* lat (number, 必填): 使用者當前緯度。
-* lon (number, 必填): 使用者當前經度。
+
+| 參數  | 說明             |
+|-------|------------------|
+| query | 餐廳名稱或關鍵字 |
+| lat   | 使用者當前緯度   |
+| lon   | 使用者當前經度   |
 
 **成功回應 (200 OK)**
 
 ```json
 [
-  {
-    "place_id": "ChIJ...",
-    "name": "Google搜尋結果餐廳A",
-    "address": "Google提供的地址",
-    "latitude": 22.xxxx,
-    "longitude": 120.xxxx,
-    "rating": 4.7,
-    "user_ratings_total": 890,
-    "distance_meters": 1234.56 // 距離使用者位置的距離 (米)
-  }
+  	{
+      "place_id": "ChIJpSEoBS9AbjQRhMZ8OYlllbc",
+      "name": "麥當勞-高雄鳥松餐廳",
+      "address": "833, Taiwan, Kaohsiung City, Niaosong District, 中正路251號",
+      "latitude": 22.6596457,
+      "longitude": 120.3638982,
+      "rating": 4.1,
+      "user_ratings_total": 2852,
+      "distance_meters": 7068.5311677
+  	},
+  	{
+        "place_id": "ChIJwTSJiYYEbjQROLkM5AEfBX0",
+        "name": "McDonald's Kaohsiung Wufu",
+        "address": "No. 258號, Wufu 2nd Rd, Sinsing District, Kaohsiung City, Taiwan 800",
+        "latitude": 22.6236752,
+        "longitude": 120.3021634,
+        "rating": 3.8,
+        "user_ratings_total": 2704,
+        "distance_meters": 6957.50328278
+	}
 ]
 ```
 
@@ -425,6 +441,7 @@ backend/
 * Description：從當前使用者的口袋名單中移除指定 ID 的餐廳。
 
 **URL Parameters**
+
 *restaurantId (string, 必填): 要移除的餐廳的本地資料庫 ID。
 
 **成功回應 (204 No Content)**: (No response body)
@@ -443,6 +460,9 @@ backend/
 
 ## Restaurant 模型
 * 儲存餐廳的基本資訊，來自 Google Maps 或手動新增。
+
+
+
 
 ```
 id: String (UUID), 主鍵
