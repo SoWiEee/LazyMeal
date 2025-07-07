@@ -264,8 +264,183 @@ backend/
 ```
 
 
+## 使用者口袋名單相關 API `/api/watchlist`
+* 這些 API 專門用於管理使用者的個人化口袋名單。
+
+### 搜尋 Google Maps 餐廳
+* URL：`/api/watchlist/search-google`
+* Method：`GET`
+* Description：根據使用者輸入的關鍵字和當前位置，向 Google Places API 發送搜尋請求，並返回相關餐廳列表。
+
+**Query Parameters**
+* query (string, 必填): 餐廳名稱或關鍵字。
+* lat (number, 必填): 使用者當前緯度。
+* lon (number, 必填): 使用者當前經度。
+
+**成功回應 (200 OK)**
+
+```json
+[
+  {
+    "place_id": "ChIJ...",
+    "name": "Google搜尋結果餐廳A",
+    "address": "Google提供的地址",
+    "latitude": 22.xxxx,
+    "longitude": 120.xxxx,
+    "rating": 4.7,
+    "user_ratings_total": 890,
+    "distance_meters": 1234.56 // 距離使用者位置的距離 (米)
+  }
+]
+```
+
+**錯誤回應 (400 Bad Request)**
+
+```json
+{
+  "message": "Missing search query."
+}
+```
+
+**錯誤回應 (500 Internal Server Error)**
+
+```json
+{
+  "message": "Failed to search Google Maps.",
+  "error": "..."
+}
+```
+
+### 添加餐廳到口袋名單
+* URL：`/api/watchlist/add-to-watchlist`
+* Method：`POST`
+* Description：將 Google Maps 搜尋結果中的餐廳添加到當前使用者的口袋名單。如果餐廳尚未存在於本地資料庫，將先新增。
+
+**Request Body**
+
+```json
+{
+  "place_id": "ChIJ...",         // 必填，Google Place ID
+  "name": "餐廳名稱",             // 必填
+  "address": "餐廳地址",          // 必填
+  "latitude": 22.xxxx,           // 必填
+  "longitude": 120.xxxx,          // 必填
+  "rating": 4.5,                 // 可選，Google 評價星數
+  "user_ratings_total": 1234     // 可選，Google 評價總數
+  // 其他可選的 Google 數據，如 phone, cuisine, priceRange (如果已處理)
+}
+```
+
+**成功回應 (201 Created)**
+
+```json
+{
+  "message": "Restaurant added to watchlist successfully!",
+  "restaurant": { /* UserRestaurant 關聯物件 */ },
+  "fullRestaurant": { /* Restaurant 完整物件，包含本地 ID 等 */ }
+}
+```
+
+**錯誤回應 (400 Bad Request)**
+```json
+{"message": "Missing required restaurant data."}
+```
+
+**錯誤回應 (409 Conflict)**
+```json
+{"message": "Restaurant already in your watchlist."} (使用者已收藏此餐廳)
+```
+
+**錯誤回應 (500 Internal Server Error)**
+```json
+{"message": "Failed to add restaurant to watchlist.", "error": "..."}
+```
+
+### 從 Google Map 連結導入餐廳
+* URL：`/api/watchlist/import-from-link`
+* Method：`POST`
+* Description：透過 Google Map 的分享連結，解析餐廳資訊並添加到使用者的口袋名單。
+
+**Request Body**
+
+```json
+{
+  "link": "https://maps.app.goo.gl/xxxxxxxxxxxxxxxxx" // 必填，Google Map 分享連結
+}
+```
+
+**成功回應 (201 Created)**
+
+```json
+{
+  "message": "Restaurant imported from link and added to watchlist!",
+  "fullRestaurant": { /* Restaurant 完整物件 */ }
+}
+```
+
+**錯誤回應 (400 Bad Request)**
+```json
+{"message": "Missing Google Maps link."} 或 {"message": "Could not extract Place ID from the provided link."}
+```
+
+**錯誤回應 (500 Internal Server Error)**
+```json
+{"message": "Failed to import restaurant from link.", "error": "..."}
+```
+
+### 獲取使用者口袋名單
+* URL：`/api/watchlist`
+* Method：`GET`
+* Description：獲取當前使用者收藏的所有餐廳列表。
+
+**成功回應 (200 OK)**
+
+```json
+[
+  {
+    "id": "local-restaurant-id-1",
+    "googlePlaceId": "ChIJ...",
+    "name": "我的收藏餐廳1",
+    "address": "地址1",
+    "rating": 4.8,
+    "userRatingsTotal": 999,
+    "priceRange": "中",
+    "cuisine": ["日式"],
+    "latitude": 22.xxxx,
+    "longitude": 120.xxxx,
+    "addedAt": "2023-01-01T..."
+  },
+  // ... 更多收藏的餐廳
+]
+```
+
+**錯誤回應 (500 Internal Server Error)**
+```json
+{"message": "Failed to fetch watchlist.", "error": "..."}
+```
+
+### 從口袋名單中刪除餐廳
+* URL：`/api/watchlist/:restaurantId`
+* Method：`DELETE`
+* Description：從當前使用者的口袋名單中移除指定 ID 的餐廳。
+
+**URL Parameters**
+*restaurantId (string, 必填): 要移除的餐廳的本地資料庫 ID。
+
+**成功回應 (204 No Content)**: (No response body)
+
+**錯誤回應 (404 Not Found)**
+```json
+{"message": "Restaurant not found in your watchlist."}
+```
+
+**錯誤回應 (500 Internal Server Error)**
+```json
+{"message": "Failed to delete restaurant from watchlist.", "error": "..."}
+```
 
 # Data Model
+
 
 
 
