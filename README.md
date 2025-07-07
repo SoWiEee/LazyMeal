@@ -97,17 +97,16 @@ backend/
 
 **Query Parameters**
 
-    * search (string, 可選): 根據餐廳名稱進行模糊搜尋。
-    * cuisine (string, 可選): 餐廳菜系 (例如 中式,西式，多個菜系用逗號分隔)。
-    * priceRange (string, 可選): 價格範圍 (例如 低, 中, 高)。
-    * lat (number, 可選): 使用者當前緯度。
-    * lon (number, 可選): 使用者當前經度。
-    * radiusKm (number, 可選): 搜尋半徑，單位公里。如果提供了 lat 和 lon，將根據此半徑篩選附近的餐廳。
+* search (string, 可選): 根據餐廳名稱進行模糊搜尋。
+* cuisine (string, 可選): 餐廳菜系 (例如 中式,西式，多個菜系用逗號分隔)。
+* priceRange (string, 可選): 價格範圍 (例如 低, 中, 高)。
+* lat (number, 可選): 使用者當前緯度。
+* lon (number, 可選): 使用者當前經度。
+* radiusKm (number, 可選): 搜尋半徑，單位公里。如果提供了 lat 和 lon，將根據此半徑篩選附近的餐廳。
 
 **成功回應 (200 OK)**
 
 ```json
-
 [
 	{
 		"id": "uuid-1",
@@ -131,8 +130,8 @@ backend/
 
 ```json
 {
-  "message": "Error fetching restaurants",
-  "error": "..."
+	"message": "Error fetching restaurants",
+	"error": "..."
 }
 ```
 
@@ -165,7 +164,7 @@ backend/
 
 ```json
 {
-  "message": "No restaurants found matching criteria."
+	"message": "No restaurants found matching criteria."
 }
 ```
 
@@ -173,8 +172,8 @@ backend/
 
 ```json
 {
-  "message": "Error selecting random restaurant",
-  "error": "..."
+	"message": "Error selecting random restaurant",
+	"error": "..."
 }
 ```
 
@@ -197,7 +196,7 @@ backend/
 
 ```json
 {
-  "message": "Restaurant not found."
+	"message": "Restaurant not found."
 }
 ```
 
@@ -205,8 +204,8 @@ backend/
 
 ```json
 {
-  "message": "Error fetching single restaurant",
-  "error": "..."
+	"message": "Error fetching single restaurant",
+	"error": "..."
 }
 ```
 
@@ -276,7 +275,7 @@ backend/
 
 **錯誤回應 (500 Internal Server Error)**
 ```json
- {
+{
 	"message": "Error deleting restaurant",
 	"error": "..."
 }
@@ -303,25 +302,25 @@ backend/
 
 ```json
 [
-  	{
-      "place_id": "ChIJpSEoBS9AbjQRhMZ8OYlllbc",
-      "name": "麥當勞-高雄鳥松餐廳",
-      "address": "833, Taiwan, Kaohsiung City, Niaosong District, 中正路251號",
-      "latitude": 22.6596457,
-      "longitude": 120.3638982,
-      "rating": 4.1,
-      "user_ratings_total": 2852,
-      "distance_meters": 7068.5311677
-  	},
-  	{
-        "place_id": "ChIJwTSJiYYEbjQROLkM5AEfBX0",
-        "name": "McDonald's Kaohsiung Wufu",
-        "address": "No. 258號, Wufu 2nd Rd, Sinsing District, Kaohsiung City, Taiwan 800",
-        "latitude": 22.6236752,
-        "longitude": 120.3021634,
-        "rating": 3.8,
-        "user_ratings_total": 2704,
-        "distance_meters": 6957.50328278
+	{
+		"place_id": "ChIJpSEoBS9AbjQRhMZ8OYlllbc",
+		"name": "麥當勞-高雄鳥松餐廳",
+		"address": "833, Taiwan, Kaohsiung City, Niaosong District, 中正路251號",
+		"latitude": 22.6596457,
+		"longitude": 120.3638982,
+		"rating": 4.1,
+		"user_ratings_total": 2852,
+		"distance_meters": 7068.5311677
+	},
+	{
+		"place_id": "ChIJwTSJiYYEbjQROLkM5AEfBX0",
+		"name": "McDonald's Kaohsiung Wufu",
+		"address": "No. 258號, Wufu 2nd Rd, Sinsing District, Kaohsiung City, Taiwan 800",
+		"latitude": 22.6236752,
+		"longitude": 120.3021634,
+		"rating": 3.8,
+		"user_ratings_total": 2704,
+		"distance_meters": 6957.50328278
 	}
 ]
 ```
@@ -330,7 +329,7 @@ backend/
 
 ```json
 {
-  "message": "Missing search query."
+	"message": "Missing search query."
 }
 ```
 
@@ -338,8 +337,8 @@ backend/
 
 ```json
 {
-  "message": "Failed to search Google Maps.",
-  "error": "..."
+	"message": "Failed to search Google Maps.",
+	"error": "..."
 }
 ```
 
@@ -366,9 +365,9 @@ backend/
 
 ```json
 {
-  "message": "Restaurant added to watchlist successfully!",
-  "restaurant": { /* UserRestaurant 關聯物件 */ },
-  "fullRestaurant": { /* Restaurant 完整物件，包含本地 ID 等 */ }
+	"message": "Restaurant added to watchlist successfully!",
+	"restaurant": { /* UserRestaurant 關聯物件 */ },
+	"fullRestaurant": { /* Restaurant 完整物件，包含本地 ID 等 */ }
 }
 ```
 
