@@ -11,19 +11,28 @@ const getUserId = (request) => {
 export const searchGoogle = async (request, reply) => {
     try {
         const { query, lat, lon } = request.query;
-        if (!query) return reply.status(400).send({ message: 'Missing search query.' });
-        if (!lat || !lon) return reply.status(400).send({ message: 'Missing user location (latitude, longitude).' });
+
+        if (!query) {
+            return reply.status(400).send({ message: 'Missing search query.' });
+        }
+        if (!lat || !lon) {
+            return reply.status(400).send({ message: 'Missing user location (latitude, longitude).' });
+        }
 
         const userLat = parseFloat(lat);
         const userLon = parseFloat(lon);
-        if (isNaN(userLat) || isNaN(userLon)) return reply.status(400).send({ message: 'Invalid user location.' });
+
+        if (isNaN(userLat) || isNaN(userLon)) {
+            return reply.status(400).send({ message: 'Invalid user location.' });
+        }
 
         const results = await searchGoogleRestaurants(query, userLat, userLon, request.prisma);
-        reply.send(results);
         request.log.info(`[V] Fetched ${results.length} restaurants from Google Maps.`);
+        return reply.send(results);
+
     } catch (error) {
-        request.log.error('Error in Google Maps search:', error);
-        reply.status(500).send({ message: 'Failed to search Google Maps.', error: error.message });
+        request.log.error('[x] Error in Google Maps search:', error);
+        return reply.status(500).send({ message: 'Failed to search Google Maps.', error: error.message });
     }
 };
 
@@ -103,7 +112,6 @@ export const importFromLink = async (request, reply) => {
         reply.status(500).send({ message: 'Failed to import restaurant from link.', error: error.message });
     }
 };
-
 
 // get user watchlist
 export const getWatchlist = async (request, reply) => {
