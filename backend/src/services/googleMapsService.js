@@ -3,11 +3,11 @@ import { Prisma } from '@prisma/client';
 
 const GOOGLE_PLACES_API_BASE_URL = 'https://maps.googleapis.com/maps/api/place/textsearch/json';
 const GOOGLE_DETAILS_API_BASE_URL = 'https://maps.googleapis.com/maps/api/place/details/json';
-const Maps_API_KEY = process.env.Maps_API_KEY;
+const MAPS_API_KEY = process.env.MAPS_API_KEY;
 
 // search Google Maps restaurants
 export async function searchGoogleRestaurants(query, userLat, userLon, prismaInstance) {
-    if (!Maps_API_KEY) {
+    if (!MAPS_API_KEY) {
         throw new Error('Google Maps API Key is not configured.');
     }
 
@@ -16,7 +16,7 @@ export async function searchGoogleRestaurants(query, userLat, userLon, prismaIns
             query: query,
             location: `${userLat},${userLon}`,
             radius: 50000, // 50 km
-            key: Maps_API_KEY
+            key: MAPS_API_KEY
         }
     });
 
@@ -54,14 +54,14 @@ export async function searchGoogleRestaurants(query, userLat, userLon, prismaIns
 
 // get Google Place details
 export async function getGooglePlaceDetails(placeId, fields = 'name,formatted_address,geometry,rating,user_ratings_total,price_level,types,international_phone_number') {
-    if (!Maps_API_KEY) {
+    if (!MAPS_API_KEY) {
         throw new Error('Google Maps API Key is not configured.');
     }
 
     const response = await axios.get(GOOGLE_DETAILS_API_BASE_URL, {
         params: {
         place_id: placeId,
-        key: Maps_API_KEY,
+        key: MAPS_API_KEY,
         fields: fields
         }
     });
