@@ -15,7 +15,7 @@ export async function searchGoogleRestaurants(query, userLat, userLon, prismaIns
         params: {
             query: query,
             location: `${userLat},${userLon}`,
-            radius: 50000, // 50 km
+            radius: 10000, // 10 km
             key: MAPS_API_KEY
         }
     });
