@@ -1,6 +1,5 @@
 import { searchGoogleRestaurants, parseGoogleMapLink, getGooglePlaceDetails } from '../services/googleMapsService.js';
 import { upsertLocalRestaurant } from '../services/restaurantService.js';
-import { addRestaurantToWatchlist, getUserWatchlist, removeRestaurantFromWatchlist } from '../services/watchlistService.js';
 
 // TODO: get actual userId from JWT or Session
 const getUserId = (request) => {
