@@ -111,16 +111,16 @@ backend/
 [
 	{
 		"id": "uuid-1",
-		"name": "美味小吃",
-		"cuisine": ["中式", "小吃"],
-		"priceRange": "低",
-		"latitude": 22.xxxx,
-		"longitude": 120.xxxx,
-		"address": "高雄市...",
-		"phone": "07-...",
-		"googlePlaceId": "ChIJ...",
-		"rating": 4.2,
-		"userRatingsTotal": 500,
+		"name": "麥當勞-高雄鳥松餐廳",
+		"cuisine": ["美式", "速食"],
+		"priceRange": "中",
+		"latitude": 22.6596457,
+		"longitude": 120.3638982,
+		"address": "833, Taiwan, Kaohsiung City, Niaosong District, 中正路251號",
+		"phone": "07-732-1390",
+		"googlePlaceId": "ChIJpSEoBS9AbjQRhMZ8OYlllbc",
+		"rating": 4.1,
+		"userRatingsTotal": 2852,
 		"createdAt": "2023-01-01T...",
 		"updatedAt": "2023-01-01T..."
 	}
@@ -146,16 +146,16 @@ backend/
 ```json
 {
 	"id": "uuid-random",
-	"name": "幸運餐廳",
-	"cuisine": ["日式"],
+	"name": "麥當勞-高雄鳥松餐廳",
+	"cuisine": ["速食"],
 	"priceRange": "中",
-	"latitude": 22.xxxx,
-	"longitude": 120.xxxx,
-	"address": "高雄市...",
-	"phone": "07-...",
-	"googlePlaceId": "ChIJ...",
-	"rating": 4.0,
-	"userRatingsTotal": 300,
+	"latitude": 22.6596457,
+	"longitude": 120.3638982,
+	"address": "833, Taiwan, Kaohsiung City, Niaosong District, 中正路251號",
+	"phone": "07-732-1390",
+	"googlePlaceId": "ChIJpSEoBS9AbjQRhMZ8OYlllbc",
+	"rating": 4.1,
+	"userRatingsTotal": 2852,
 	"createdAt": "2023-01-01T...",
 	"updatedAt": "2023-01-01T..."
 }
@@ -225,14 +225,14 @@ backend/
 
 ```json
 {
-	"name": "更新後的餐廳名稱",
-	"cuisine": ["日式", "壽司"],
+	"name": "McDonald's Kaohsiung Wofo",
+	"cuisine": ["速食", "美式"],
 	"priceRange": "高",
-	"latitude": 22.xxxx,
-	"longitude": 120.xxxx,
-	"address": "更新後的地址",
+	"latitude": 22.6236752,
+	"longitude": 120.3021634,
+	"address": "No. 258號, Wufu 2nd Rd, Sinsing District, Kaohsiung City, Taiwan 870",
 	"phone": "09xx-xxxxxx"
-	// 其他可更新的欄位
+	// ... more fields
 }
 ```
 
