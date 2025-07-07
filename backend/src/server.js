@@ -1,11 +1,9 @@
+import 'dotenv/config';
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
-import { PrismaClient } from '@prisma/client';
-import dotenv from 'dotenv';
+import prismaPlugin from './plugins/prismaPlugin.js';
 import restaurantRoutes from './routes/restaurant.js';
-
-dotenv.config();
-const prisma = new PrismaClient();
+import watchlistRoutes from './routes/watchlist.js';
 
 const fastify = Fastify({
   logger: {
@@ -29,24 +27,16 @@ fastify.register(cors, {
   	credentials: true,
 });
 
-fastify.decorate('prisma', prisma);
-
-fastify.addHook('onClose', async (instance) => {
-	await instance.prisma.$disconnect();
-	instance.log.info('[V] Prisma disconnected.');
-});
+fastify.register(prismaPlugin);
 
 // register restaurant routes
 fastify.register(restaurantRoutes, { prefix: '/api/restaurants' });
+fastify.register(watchlistRoutes, { prefix: '/api/watchlist' });
 
 const start = async () => {
 	try {
 		const port = process.env.PORT || 3000;
 		const host = process.env.HOST || '0.0.0.0';
-
-		// connect to database
-		await prisma.$connect();
-		fastify.log.info('Connected to PostgreSQL database.');
 
 		// start server
 		await fastify.listen({ port, host });
