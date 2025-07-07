@@ -1,8 +1,271 @@
 # LazyMeal
-A web application for choose lunch/dinner easily
+
+
+# Introduction
+A web application for choose lunch/dinner easily !
 
 # Requirements
 * Node.js `v22.17.0`
+* PostgreSQL `v17.5`
+
+# Quick Started
+
+1. Build environment with following commands:
+
+```Bash
+# clone repo
+$ git clone https://github.com/SoWiEee/LazyMeal.git
+$ cd /LazyMeal
+
+# install dependencies
+$ npm install   # yarn install
+```
+
+2. Create `.env` file at `/backend`
+
+```
+PORT = 3000
+HOST = 0.0.0.0
+
+DATABASE_URL = "postgresql://[使用者名稱]:[密碼]@[主機名稱]:[埠號]/[資料庫名稱]?schema=public"
+# example: DATABASE_URL = "postgresql://user:password@localhost:5432/mydatabase?schema=public"
+
+CORS_ORIGIN = http://localhost:5173
+
+# Google Maps API Key
+# 請確保已在 Google Cloud Platform 啟用 Places API
+Maps_API_KEY = YOUR_API_KEY
+```
+
+3. Initialize database:
+    * create empty table in PostgreSQL, like `restaurant_selector_db`
+    * Prisma migration：according `prisma/schema.prisma` to build scheme
+
+```Bash
+$ npx prisma migrate dev --name init_database
+```
+
+4. Launch dev server (3000 port)
+
+```Bash
+$ npm run dev   # yarn dev
+```
+
+# Project Directory
+
+```
+backend/
+├── src/
+│   ├── routes/             # 定義所有 API 端點，將請求導向控制器
+│   │   ├── restaurantRoutes.js  # 通用餐廳相關路由 (系統推薦、CRUD)
+│   │   └── watchlistRoutes.js   # 使用者口袋名單相關路由
+│   │
+│   ├── controllers/        # 處理業務邏輯，調用服務層，並組裝回應
+│   │   ├── restaurantController.js
+│   │   └── watchlistController.js
+│   │
+│   ├── services/           # 處理數據層操作、外部 API 呼叫、複雜業務規則
+│   │   ├── restaurantService.js   # 與餐廳資料庫互動
+│   │   ├── googleMapsService.js   # 專門處理 Google Maps API 呼叫
+│   │   └── watchlistService.js    # 與使用者口袋名單資料庫互動
+│   │
+│   ├── plugins/            # Fastify 插件，用於擴展 Fastify 功能 (例如掛載 Prisma Client)
+│   │   └── prismaPlugin.js
+│   │
+│   ├── utils/              # 實用工具函式 (例如查詢參數解析、SQL 語句構建)
+│   │   └── queryParser.js
+│   └── server.js          # Fastify 應用程式入口點，註冊插件和路由
+│
+├── prisma/                 # Prisma ORM 相關文件
+│   ├── schema.prisma       # 資料庫模式定義
+│   └── migrations/         # 資料庫遷移記錄
+│
+├── .env                    # 環境變數設定（自行設置）
+├── package.json
+└── yarn.lock
+```
+
+# API Docs
+
+## 通用餐廳相關 API `/api/restaurants`
+* 這些 API 主要用於系統層面的餐廳數據查詢和管理。
+
+### 獲取所有餐廳 (可篩選)
+* URL：`/api/restaurants`
+* Method：`GET`
+* Description：根據提供的篩選條件，獲取所有符合條件的餐廳列表。
+
+**Query Parameters**
+    * search (string, 可選): 根據餐廳名稱進行模糊搜尋。
+    * cuisine (string, 可選): 餐廳菜系 (例如 中式,西式，多個菜系用逗號分隔)。
+    * priceRange (string, 可選): 價格範圍 (例如 低, 中, 高)。
+    * lat (number, 可選): 使用者當前緯度。
+    * lon (number, 可選): 使用者當前經度。
+    * radiusKm (number, 可選): 搜尋半徑，單位公里。如果提供了 lat 和 lon，將根據此半徑篩選附近的餐廳。
+
+**成功回應 (200 OK)**
+
+```json
+
+[
+  {
+    "id": "uuid-1",
+    "name": "美味小吃",
+    "cuisine": ["中式", "小吃"],
+    "priceRange": "低",
+    "latitude": 22.xxxx,
+    "longitude": 120.xxxx,
+    "address": "高雄市...",
+    "phone": "07-...",
+    "googlePlaceId": "ChIJ...",
+    "rating": 4.2,
+    "userRatingsTotal": 500,
+    "createdAt": "2023-01-01T...",
+    "updatedAt": "2023-01-01T..."
+  }
+]
+```
+
+**錯誤回應 (500 Internal Server Error)**
+
+```json
+{
+  "message": "Error fetching restaurants",
+  "error": "..."
+}
+```
+
+### 隨機選擇餐廳
+* URL：`/api/restaurants/random`
+* Method：`GET`
+* Description：在所有符合查詢參數篩選條件的餐廳中，隨機返回一家餐廳。
+
+**Query Parameters**
+
+**成功回應 (200 OK)**
+
+```json
+{
+  "id": "uuid-random",
+  "name": "幸運餐廳",
+  "cuisine": ["日式"],
+  "priceRange": "中",
+  "latitude": 22.xxxx,
+  "longitude": 120.xxxx,
+  "address": "高雄市...",
+  "phone": "07-...",
+  "googlePlaceId": "ChIJ...",
+  "rating": 4.0,
+  "userRatingsTotal": 300,
+  "createdAt": "2023-01-01T...",
+  "updatedAt": "2023-01-01T..."
+}
+```
+
+**錯誤回應 (404 Not Found)**
+
+```json
+{
+  "message": "No restaurants found matching criteria."
+}
+```
+
+**錯誤回應 (500 Internal Server Error)**
+
+```json
+{
+  "message": "Error selecting random restaurant",
+  "error": "..."
+}
+```
+
+### 獲取單一餐廳
+* URL：`/api/restaurants/:id`
+* Method：`GET`
+* Description：根據餐廳的 UUID 獲取其詳細資訊。
+
+**URL Parameters**
+* id (string, 必填): 餐廳的 UUID。
+
+**成功回應 (200 OK)**
+ (同隨機選擇餐廳的 JSON 格式)
+
+**錯誤回應 (404 Not Found)**
+
+```json
+{
+  "message": "Restaurant not found."
+}
+```
+
+**錯誤回應 (500 Internal Server Error)**
+
+```json
+{
+  "message": "Error fetching single restaurant",
+  "error": "..."
+}
+```
+
+### 更新餐廳 (管理員專用)
+* URL：`/api/restaurants/:id`
+* Method：`PUT`
+* Description：更新指定 ID 餐廳的資訊。通常用於管理後台。
+
+**URL Parameters**
+* id (string, 必填): 餐廳的 UUID。
+
+**Request Body**
+
+```json
+{
+  "name": "更新後的餐廳名稱",
+  "cuisine": ["日式", "壽司"],
+  "priceRange": "高",
+  "latitude": 22.xxxx,
+  "longitude": 120.xxxx,
+  "address": "更新後的地址",
+  "phone": "09xx-xxxxxx"
+  // 其他可更新的欄位
+}
+```
+
+**成功回應 (200 OK)**: (返回更新後的餐廳物件)
+
+**錯誤回應 (404 Not Found)**
+
+```json
+{"message": "Restaurant not found."}
+```
+
+**錯誤回應 (500 Internal Server Error)**
+```json
+{"message": "Error updating restaurant", "error": "..."}
+```
+
+### 刪除餐廳 (管理員專用)
+* URL：`/api/restaurants/:id`
+* Method：`DELETE`
+* Description：刪除指定 ID 的餐廳。通常用於管理後台。
+
+**URL Parameters**
+* id (string, 必填): 餐廳的 UUID。
+
+**成功回應 (204 No Content)**: (No response body)
+
+**錯誤回應 (404 Not Found)**
+```json
+{"message": "Restaurant not found."}
+```
+
+**錯誤回應 (500 Internal Server Error)**
+```json
+ {"message": "Error deleting restaurant", "error": "..."}
+```
+
+
+
+# Data Model
 
 
 
