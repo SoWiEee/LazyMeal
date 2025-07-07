@@ -4,6 +4,14 @@
   "type": "module",
   "main": "server.js",
   "license": "MIT",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles",
+    "prisma:migrate": "npx prisma migrate dev",
+    "prisma:studio": "npx prisma studio",
+    "prisma:generate": "npx prisma generate"
+  },
   "dependencies": {
     "@fastify/cors": "^11.0.1",
     "@prisma/client": "^6.11.0",
