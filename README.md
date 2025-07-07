@@ -96,6 +96,7 @@ backend/
 * Description：根據提供的篩選條件，獲取所有符合條件的餐廳列表。
 
 **Query Parameters**
+
     * search (string, 可選): 根據餐廳名稱進行模糊搜尋。
     * cuisine (string, 可選): 餐廳菜系 (例如 中式,西式，多個菜系用逗號分隔)。
     * priceRange (string, 可選): 價格範圍 (例如 低, 中, 高)。
@@ -108,21 +109,21 @@ backend/
 ```json
 
 [
-  {
-    "id": "uuid-1",
-    "name": "美味小吃",
-    "cuisine": ["中式", "小吃"],
-    "priceRange": "低",
-    "latitude": 22.xxxx,
-    "longitude": 120.xxxx,
-    "address": "高雄市...",
-    "phone": "07-...",
-    "googlePlaceId": "ChIJ...",
-    "rating": 4.2,
-    "userRatingsTotal": 500,
-    "createdAt": "2023-01-01T...",
-    "updatedAt": "2023-01-01T..."
-  }
+	{
+		"id": "uuid-1",
+		"name": "美味小吃",
+		"cuisine": ["中式", "小吃"],
+		"priceRange": "低",
+		"latitude": 22.xxxx,
+		"longitude": 120.xxxx,
+		"address": "高雄市...",
+		"phone": "07-...",
+		"googlePlaceId": "ChIJ...",
+		"rating": 4.2,
+		"userRatingsTotal": 500,
+		"createdAt": "2023-01-01T...",
+		"updatedAt": "2023-01-01T..."
+	}
 ]
 ```
 
@@ -144,19 +145,19 @@ backend/
 
 ```json
 {
-  "id": "uuid-random",
-  "name": "幸運餐廳",
-  "cuisine": ["日式"],
-  "priceRange": "中",
-  "latitude": 22.xxxx,
-  "longitude": 120.xxxx,
-  "address": "高雄市...",
-  "phone": "07-...",
-  "googlePlaceId": "ChIJ...",
-  "rating": 4.0,
-  "userRatingsTotal": 300,
-  "createdAt": "2023-01-01T...",
-  "updatedAt": "2023-01-01T..."
+	"id": "uuid-random",
+	"name": "幸運餐廳",
+	"cuisine": ["日式"],
+	"priceRange": "中",
+	"latitude": 22.xxxx,
+	"longitude": 120.xxxx,
+	"address": "高雄市...",
+	"phone": "07-...",
+	"googlePlaceId": "ChIJ...",
+	"rating": 4.0,
+	"userRatingsTotal": 300,
+	"createdAt": "2023-01-01T...",
+	"updatedAt": "2023-01-01T..."
 }
 ```
 
@@ -189,6 +190,7 @@ backend/
 | id    | 餐廳的 UUID     |
 
 **成功回應 (200 OK)**
+
  (同隨機選擇餐廳的 JSON 格式)
 
 **錯誤回應 (404 Not Found)**
@@ -223,14 +225,14 @@ backend/
 
 ```json
 {
-  "name": "更新後的餐廳名稱",
-  "cuisine": ["日式", "壽司"],
-  "priceRange": "高",
-  "latitude": 22.xxxx,
-  "longitude": 120.xxxx,
-  "address": "更新後的地址",
-  "phone": "09xx-xxxxxx"
-  // 其他可更新的欄位
+	"name": "更新後的餐廳名稱",
+	"cuisine": ["日式", "壽司"],
+	"priceRange": "高",
+	"latitude": 22.xxxx,
+	"longitude": 120.xxxx,
+	"address": "更新後的地址",
+	"phone": "09xx-xxxxxx"
+	// 其他可更新的欄位
 }
 ```
 
@@ -340,14 +342,13 @@ backend/
 
 ```json
 {
-  "place_id": "ChIJ...",         // 必填，Google Place ID
-  "name": "餐廳名稱",             // 必填
-  "address": "餐廳地址",          // 必填
-  "latitude": 22.xxxx,           // 必填
-  "longitude": 120.xxxx,          // 必填
-  "rating": 4.5,                 // 可選，Google 評價星數
-  "user_ratings_total": 1234     // 可選，Google 評價總數
-  // 其他可選的 Google 數據，如 phone, cuisine, priceRange (如果已處理)
+	"place_id": "ChIJwTSJiYYEbjQROLkM5AEfBX0",
+	"name": "McDonald's Kaohsiung Wufu",
+	"address": "No. 258號, Wufu 2nd Rd, Sinsing District, Kaohsiung City, Taiwan 800",
+	"latitude": 22.6236752,
+	"longitude": 120.3021634,
+	"rating": 3.8,
+	"user_ratings_total": 2704,
 }
 ```
 
@@ -368,7 +369,7 @@ backend/
 
 **錯誤回應 (409 Conflict)**
 ```json
-{"message": "Restaurant already in your watchlist."} (使用者已收藏此餐廳)
+{"message": "Restaurant already in your watchlist."}
 ```
 
 **錯誤回應 (500 Internal Server Error)**
@@ -417,20 +418,20 @@ backend/
 
 ```json
 [
-  {
-    "id": "local-restaurant-id-1",
-    "googlePlaceId": "ChIJ...",
-    "name": "我的收藏餐廳1",
-    "address": "地址1",
-    "rating": 4.8,
-    "userRatingsTotal": 999,
-    "priceRange": "中",
-    "cuisine": ["日式"],
-    "latitude": 22.xxxx,
-    "longitude": 120.xxxx,
-    "addedAt": "2023-01-01T..."
-  },
-  // ... 更多收藏的餐廳
+	{
+		"id": "local-restaurant-id-1",
+		"googlePlaceId": "ChIJwTSJiYYEbjQROLkM5AEfBX0",
+		"name": "McDonald's Kaohsiung Wufu",
+		"address": "No. 258號, Wufu 2nd Rd, Sinsing District, Kaohsiung City, Taiwan 800",
+		"rating": 3.8,
+		"userRatingsTotal": 2704,
+		"priceRange": "中",
+		"cuisine": ["速食"],
+		"latitude": 22.6236752,
+		"longitude": 120.3021634,
+		"addedAt": "2023-01-01T..."
+	},
+	// ... more
 ]
 ```
 
@@ -446,7 +447,9 @@ backend/
 
 **URL Parameters**
 
-*restaurantId (string, 必填): 要移除的餐廳的本地資料庫 ID。
+| 參數          |  說明                   |
+|--------------|-------------------------|
+| restaurantId | 要移除的餐廳的本地資料庫 ID |
 
 **成功回應 (204 No Content)**: (No response body)
 
