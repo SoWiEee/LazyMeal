@@ -37,19 +37,19 @@ export async function searchGoogleRestaurants(query, userLat, userLon, prismaIns
     // calculate distance and sort
     if (results.length > 0 && userLat && userLon) {
         const sortedResults = await Promise.all(results.map(async (place) => {
-        // use Prisma.$queryRaw to calculate distance
-        const distanceResult = await prismaInstance.$queryRaw(Prisma.sql`
-            SELECT ST_Distance(
-            ST_SetSRID(ST_MakePoint(${place.longitude}, ${place.latitude}), 4326)::geography,
-            ST_SetSRID(ST_MakePoint(${userLon}, ${userLat}), 4326)::geography
-            ) as distance_meters;
-        `);
-        return { ...place, distance_meters: distanceResult[0]?.distance_meters || null };
+            // use Prisma.$queryRaw to calculate distance
+            const distanceResult = await prismaInstance.$queryRaw(Prisma.sql`
+                SELECT ST_Distance(
+                ST_SetSRID(ST_MakePoint(${place.longitude}, ${place.latitude}), 4326)::geography,
+                ST_SetSRID(ST_MakePoint(${userLon}, ${userLat}), 4326)::geography
+                ) as distance_meters;
+            `);
+            return { ...place, distance_meters: distanceResult[0]?.distance_meters || null };
         }));
         results = sortedResults.sort((a, b) => a.distance_meters - b.distance_meters);
     }
 
-  return results;
+    return results;
 }
 
 // get Google Place details
@@ -60,9 +60,9 @@ export async function getGooglePlaceDetails(placeId, fields = 'name,formatted_ad
 
     const response = await axios.get(GOOGLE_DETAILS_API_BASE_URL, {
         params: {
-        place_id: placeId,
-        key: MAPS_API_KEY,
-        fields: fields
+            place_id: placeId,
+            key: MAPS_API_KEY,
+            fields: fields
         }
     });
 
@@ -88,20 +88,20 @@ export async function parseGoogleMapLink(link) {
     // if not found directly from URL, may need to follow redirect
     if (!placeId) {
         try {
-        const response = await axios.get(link, { maxRedirects: 0, validateStatus: status => status >= 200 && status < 400 });
-        if (response.headers.location) {
-            const redirectedUrl = response.headers.location;
-            const redirectedMatch = redirectedUrl.match(placeIdRegex);
-            if (redirectedMatch && redirectedMatch[1]) {
-            placeId = redirectedMatch[1];
+            const response = await axios.get(link, { maxRedirects: 0, validateStatus: status => status >= 200 && status < 400 });
+            if (response.headers.location) {
+                const redirectedUrl = response.headers.location;
+                const redirectedMatch = redirectedUrl.match(placeIdRegex);
+                if (redirectedMatch && redirectedMatch[1]) {
+                    placeId = redirectedMatch[1];
+                }
             }
-        }
         } catch (redirectError) {
         if (redirectError.response && redirectError.response.headers && redirectError.response.headers.location) {
             const redirectedUrl = redirectError.response.headers.location;
             const redirectedMatch = redirectedUrl.match(placeIdRegex);
             if (redirectedMatch && redirectedMatch[1]) {
-            placeId = redirectedMatch[1];
+                placeId = redirectedMatch[1];
             }
         }
         }
