@@ -97,13 +97,13 @@ export async function parseGoogleMapLink(link) {
                 }
             }
         } catch (redirectError) {
-        if (redirectError.response && redirectError.response.headers && redirectError.response.headers.location) {
-            const redirectedUrl = redirectError.response.headers.location;
-            const redirectedMatch = redirectedUrl.match(placeIdRegex);
-            if (redirectedMatch && redirectedMatch[1]) {
-                placeId = redirectedMatch[1];
+            if (redirectError.response && redirectError.response.headers && redirectError.response.headers.location) {
+                const redirectedUrl = redirectError.response.headers.location;
+                const redirectedMatch = redirectedUrl.match(placeIdRegex);
+                if (redirectedMatch && redirectedMatch[1]) {
+                    placeId = redirectedMatch[1];
+                }
             }
-        }
         }
     }
 

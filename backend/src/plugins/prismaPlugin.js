@@ -12,13 +12,13 @@ async function prismaPlugin(fastify, options) {
     fastify.addHook('onRequest', (request, reply, done) => {
         request.prisma = prisma;
         done();
-      });
+    });
     
     fastify.addHook('onClose', async (instance) => {
-    if (instance.prisma && typeof instance.prisma.$disconnect === 'function') {
-        await instance.prisma.$disconnect();
-        instance.log.info('[V] Disconnected from PostgreSQL database via Prisma.');
-    }
+        if (instance.prisma && typeof instance.prisma.$disconnect === 'function') {
+            await instance.prisma.$disconnect();
+            instance.log.info('[V] Disconnected from PostgreSQL database via Prisma.');
+        }
     });
 }
 
