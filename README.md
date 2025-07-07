@@ -241,12 +241,17 @@ backend/
 **錯誤回應 (404 Not Found)**
 
 ```json
-{"message": "Restaurant not found."}
+{
+	"message": "Restaurant not found."
+}
 ```
 
 **錯誤回應 (500 Internal Server Error)**
 ```json
-{"message": "Error updating restaurant", "error": "..."}
+{
+	"message": "Error updating restaurant",
+	"error": "..."
+}
 ```
 
 ### 刪除餐廳 (管理員專用)
@@ -264,12 +269,17 @@ backend/
 
 **錯誤回應 (404 Not Found)**
 ```json
-{"message": "Restaurant not found."}
+{
+	"message": "Restaurant not found."
+}
 ```
 
 **錯誤回應 (500 Internal Server Error)**
 ```json
- {"message": "Error deleting restaurant", "error": "..."}
+ {
+	"message": "Error deleting restaurant",
+	"error": "..."
+}
 ```
 
 
@@ -364,17 +374,24 @@ backend/
 
 **錯誤回應 (400 Bad Request)**
 ```json
-{"message": "Missing required restaurant data."}
+{
+	"message": "Missing required restaurant data."
+}
 ```
 
 **錯誤回應 (409 Conflict)**
 ```json
-{"message": "Restaurant already in your watchlist."}
+{
+	"message": "Restaurant already in your watchlist."
+}
 ```
 
 **錯誤回應 (500 Internal Server Error)**
 ```json
-{"message": "Failed to add restaurant to watchlist.", "error": "..."}
+{
+	"message": "Failed to add restaurant to watchlist.",
+	"error": "..."
+}
 ```
 
 ### 從 Google Map 連結導入餐廳
@@ -386,7 +403,7 @@ backend/
 
 ```json
 {
-  "link": "https://maps.app.goo.gl/xxxxxxxxxxxxxxxxx" // 必填，Google Map 分享連結
+  "link": "https://share.google/mAaFtPHFSZmOVAR6y"
 }
 ```
 
@@ -401,12 +418,23 @@ backend/
 
 **錯誤回應 (400 Bad Request)**
 ```json
-{"message": "Missing Google Maps link."} 或 {"message": "Could not extract Place ID from the provided link."}
+{
+	"message": "Missing Google Maps link."
+}
+
+// or
+
+{
+	"message": "Could not extract Place ID from the provided link."
+}
 ```
 
 **錯誤回應 (500 Internal Server Error)**
 ```json
-{"message": "Failed to import restaurant from link.", "error": "..."}
+{
+	"message": "Failed to import restaurant from link.",
+	"error": "..."
+}
 ```
 
 ### 獲取使用者口袋名單
@@ -437,7 +465,10 @@ backend/
 
 **錯誤回應 (500 Internal Server Error)**
 ```json
-{"message": "Failed to fetch watchlist.", "error": "..."}
+{
+	"message": "Failed to fetch watchlist.",
+	"error": "..."
+}
 ```
 
 ### 從口袋名單中刪除餐廳
@@ -455,12 +486,17 @@ backend/
 
 **錯誤回應 (404 Not Found)**
 ```json
-{"message": "Restaurant not found in your watchlist."}
+{
+	"message": "Restaurant not found in your watchlist."
+}
 ```
 
 **錯誤回應 (500 Internal Server Error)**
 ```json
-{"message": "Failed to delete restaurant from watchlist.", "error": "..."}
+{
+	"message": "Failed to delete restaurant from watchlist.",
+	"error": "..."
+}
 ```
 
 # Data Model
