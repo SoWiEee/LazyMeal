@@ -1,0 +1,60 @@
+
+generator client {
+	provider = "prisma-client-js"
+}
+
+datasource db {
+	provider = "postgresql"
+	url      = env("DATABASE_URL")
+}
+
+// ============== 現有餐廳模型 (用於隨機選擇功能) ==============
+// 這個模型可以繼續用於你的隨機推薦功能，或者是作為使用者自行新增的餐廳
+model Restaurant {
+	id          String    @id @default(uuid())
+	name        String
+	cuisine     String[]  // 例如: ["中式", "西式"]
+	priceRange  String    // 例如: "低", "中", "高" (可選，根據 Google Maps 數據決定是否需要)
+	latitude    Float
+	longitude   Float
+	address     String?
+	phone       String?
+	googlePlaceId String? @unique // 新增：儲存 Google Maps Place ID，方便查找
+	rating      Float? // 新增：Google Maps 評價星數
+	userRatingsTotal Int? // 新增：Google Maps 評價總數
+
+	createdAt   DateTime  @default(now())
+	updatedAt   DateTime  @updatedAt
+
+	userBookmarks UserRestaurant[] // 關聯到使用者收藏
+
+  @@map("restaurants")
+}
+
+// ============== 新增使用者口袋名單模型 ==============
+// 假設你有一個簡單的 User 模型 (即使目前沒有登入系統，未來也方便擴展)
+model User {
+	id            String          @id @default(uuid())
+	username      String          @unique
+	// passwordHash  String // 實際應用中會儲存密碼的 Hash
+	createdAt     DateTime        @default(now())
+	updatedAt     DateTime        @updatedAt
+	bookmarkedRestaurants UserRestaurant[]
+	@@map("users")
+}
+
+
+// ============== 使用者收藏餐廳模型 ==============
+// 這是一個關聯表，記錄哪個使用者收藏了哪個餐廳
+model UserRestaurant {
+	id             String    @id @default(uuid())
+	userId         String
+	restaurantId   String
+	addedAt        DateTime  @default(now())
+
+	user           User      @relation(fields: [userId], references: [id])
+	restaurant     Restaurant @relation(fields: [restaurantId], references: [id])
+
+	@@unique([userId, restaurantId]) // 確保一個用戶不能重複收藏同一家餐廳
+	@@map("user_restaurants")
+}
