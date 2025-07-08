@@ -1,4 +1,4 @@
-import { searchGoogle, addToWatchlist, importFromLink, getWatchlist, removeFromWatchlist } from '../controllers/watchlistController.js';
+import { searchGoogle, addToWatchlist, getWatchlist, removeFromWatchlist } from '../controllers/watchlistController.js';
 
 async function watchlistRoutes(fastify, options) {
 
