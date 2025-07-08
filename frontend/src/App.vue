@@ -1,22 +1,21 @@
 <script setup>
-import { RouterView } from 'vue-router'
+
 </script>
 
 <template>
-  <RouterView />
+	<q-layout view="lHh Lpr lff"> <q-header elevated class="bg-primary text-white">
+		<q-toolbar>
+			<q-toolbar-title>
+				Lazy Meal
+			</q-toolbar-title>
+		</q-toolbar>
+    </q-header>
+
+    <q-page-container> <router-view /> </q-page-container>
+
+    </q-layout>
 </template>
 
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
+
 </style>
