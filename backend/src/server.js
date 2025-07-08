@@ -6,17 +6,17 @@ import restaurantRoutes from './routes/restaurant.js';
 import watchlistRoutes from './routes/watchlist.js';
 
 const fastify = Fastify({
-  logger: {
-    level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
-    transport: {
-      target: 'pino-pretty',
-      options: {
-        colorize: true,
-        translateTime: 'SYS:yyyy-mm-dd HH:MM:ss',
-        ignore: 'pid,hostname'
-      }
-    }
-  }
+	logger: {
+		level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
+		transport: {
+			target: 'pino-pretty',
+			options: {
+				colorize: true,
+				translateTime: 'SYS:yyyy-mm-dd HH:MM:ss',
+				ignore: 'pid,hostname'
+			}
+		}
+	}
 });
 
 // CORS
