@@ -125,9 +125,15 @@ onMounted(() => {
 									位置： ({{ restaurant.latitude }}, {{ restaurant.longitude }})
 								</q-item-label> -->
 							</q-item-section>
-
 							<q-item-section side top>
-								<q-btn flat round icon="favorite_border" color="grey" size="sm" />
+								<q-btn
+									flat
+									round
+									:icon="watchlist.some(item => item.place_id === restaurant.place_id) ? 'favorite' : 'favorite_border'"
+									:color="watchlist.some(item => item.place_id === restaurant.place_id) ? 'red' : 'grey'"
+									size="sm"
+									@click.stop="addToWatchlist(restaurant)"
+								/>
 							</q-item-section>
 						</q-item>
 					</q-list>
