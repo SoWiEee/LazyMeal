@@ -21,9 +21,12 @@ const searchRestaurants = () => {
 	}
 }
 
-const addToWatchlist = (restaurant) => {
-	const exists = watchlist.value.some(item => item.place_id === restaurant.place_id)
-	if (!exists) {
+// 修改：加入或移除口袋名單的方法
+const toggleWatchlist = (restaurant) => {
+	const index = watchlist.value.findIndex(item => item.place_id === restaurant.place_id)
+
+	if (index === -1) {
+		// 不存在於口袋名單，則加入
 		watchlist.value.push(restaurant)
 		$q.notify({
 			message: `${restaurant.name} 已加入口袋名單！`,
@@ -33,10 +36,28 @@ const addToWatchlist = (restaurant) => {
 			timeout: 1500
 		})
 	} else {
+		// 已存在於口袋名單，則移除
+		watchlist.value.splice(index, 1)
 		$q.notify({
-			message: `${restaurant.name} 已在口袋名單中。`,
-			color: 'orange-4',
-			icon: 'info',
+			message: `${restaurant.name} 已從口袋名單移除。`,
+			color: 'red-4',
+			icon: 'remove_circle',
+			position: 'top',
+			timeout: 1500
+		})
+	}
+}
+
+// 新增：從口袋名單移除的方法 (用於右側卡片上的刪除按鈕)
+const removeFromWatchlist = (placeId) => {
+	const index = watchlist.value.findIndex(item => item.place_id === placeId)
+	if (index !== -1) {
+		const removedRestaurant = watchlist.value[index]
+		watchlist.value.splice(index, 1)
+		$q.notify({
+			message: `${removedRestaurant.name} 已從口袋名單移除。`,
+			color: 'red-4',
+			icon: 'remove_circle',
 			position: 'top',
 			timeout: 1500
 		})
@@ -132,7 +153,7 @@ onMounted(() => {
 									:icon="watchlist.some(item => item.place_id === restaurant.place_id) ? 'favorite' : 'favorite_border'"
 									:color="watchlist.some(item => item.place_id === restaurant.place_id) ? 'red' : 'grey'"
 									size="sm"
-									@click.stop="addToWatchlist(restaurant)"
+									@click.stop="toggleWatchlist(restaurant)"
 								/>
 							</q-item-section>
 						</q-item>
