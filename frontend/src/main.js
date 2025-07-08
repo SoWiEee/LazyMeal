@@ -7,5 +7,14 @@ import { Quasar } from 'quasar';
 import 'quasar/src/css/index.sass';
 import '@quasar/extras/material-icons/material-icons.css'; 
 
-const pinia = createPinia()
-createApp(App).use(pinia).use(router).use(Quasar, {dark: true}).mount('#app')
+const app = createApp(App);
+const pinia = createPinia();
+
+app.use(pinia);
+app.use(router);
+app.use(Quasar, {
+    plugins: {},
+    dark: true,
+});
+  
+app.mount('#app');
