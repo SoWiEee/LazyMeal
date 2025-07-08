@@ -17,84 +17,110 @@ const searchRestaurants = () => {
 }
 
 onMounted(() => {
-    searchRestaurants()
+  searchRestaurants()
 })
 </script>
 
 <template>
     <q-page class="q-pa-md">
-        <h1 class="text-h4 q-mb-md">附近餐廳</h1>
-        <div class="row q-mb-lg q-gutter-md items-center">
-            <div class="col-12 col-sm-6 col-md-4">
-                <q-input outlined v-model="searchQuery" label="輸入餐廳名稱，例如：麥當勞" clearable @keyup.enter="searchRestaurants">
-                    <template v-slot:append>
-                        <q-icon name="restaurant" />
-                    </template>
-                </q-input>
-            </div>
-            <div class="col-12 col-sm-auto"> <q-btn
-                color="primary"
-                label="搜尋"
-                @click="searchRestaurants"
-                :loading="restaurantStore.isLoading"
-                icon="search"
+    <h1 class="text-h4 q-mb-md">附近餐廳</h1>
+
+    <div class="row q-mb-lg q-gutter-md items-center">
+        <div class="col-12 col-sm-8">
+            <q-input
+                outlined
+                v-model="searchQuery"
+                label="輸入餐廳名稱，例如：麥當勞"
+                clearable
+                @keyup.enter="searchRestaurants"
+            >
+                <template v-slot:append>
+                    <q-icon name="restaurant" />
+                </template>
+            </q-input>
+        </div>
+        <div class="col-12 col-sm-auto">
+            <q-btn
+            color="primary"
+            label="搜尋"
+            @click="searchRestaurants"
+            :loading="restaurantStore.isLoading"
+            icon="search"
             />
-            </div>
         </div>
+    </div>
 
-        <div class="row justify-center">
-            <div class="col-12 col-md-8">
-                <q-banner v-if="restaurantStore.isLoading" rounded class="bg-blue-1 text-blue-8 q-mb-md">
-                    <q-spinner-dots size="2em" /> 載入中...
-                </q-banner>
-                <q-banner v-else-if="restaurantStore.error" rounded class="bg-red-1 text-red-8 q-mb-md">
-                    <q-icon name="error" color="red" /> 錯誤: {{ restaurantStore.error }}
-                </q-banner>
-                <q-banner v-else-if="restaurantStore.restaurants.length === 0" rounded class="bg-orange-1 text-orange-8 q-mb-md">
-                    <q-icon name="warning" color="orange" /> 沒有找到餐廳。
-                </q-banner>
-                </div>
+    <div class="row">
+        <div class="col-12">
+            <q-banner v-if="restaurantStore.isLoading" rounded class="bg-blue-1 text-blue-8 q-mb-md">
+                <q-spinner-dots size="2em" /> Loading...
+            </q-banner>
+            <q-banner v-else-if="restaurantStore.error" rounded class="bg-red-1 text-red-8 q-mb-md">
+                <q-icon name="error" color="red" /> 錯誤: {{ restaurantStore.error }}
+            </q-banner>
+            <q-banner v-else-if="restaurantStore.restaurants.length === 0" rounded class="bg-orange-1 text-orange-8 q-mb-md">
+                <q-icon name="warning" color="orange" /> 沒有找到餐廳。
+            </q-banner>
         </div>
+    </div>
 
-        <div class="row q-col-gutter-md">
-            <div class="col-12 col-md-8" v-for="restaurant in restaurantStore.restaurants" :key="restaurant.place_id">
-                <q-card class="my-card">
-                    <q-card-section>
-                        <div class="text-h6">{{ restaurant.name }}</div>
-                        <div class="text-subtitle2">地址: {{ restaurant.address }}</div>
-                    </q-card-section>
+    <div class="row q-mt-md">
+        <div class="col-12">
+            <q-list bordered separator class="q-list-custom-style">
+                <q-item
+                    v-for="restaurant in restaurantStore.restaurants"
+                    :key="restaurant.place_id"
+                    clickable
+                    v-ripple
+                    class="q-item-custom-style"
+                >
+                    <q-item-section>
+                        <q-item-label lines="1" class="text-h6 text-weight-medium">
+                            {{ restaurant.name }}
+                        </q-item-label>
+                        <q-item-label caption lines="2">
+                            地址: {{ restaurant.address }}
+                        </q-item-label>
+                        <q-item-label caption>
+                            評分: {{ restaurant.rating }} ({{ restaurant.user_ratings_total }} 評價)
+                        </q-item-label>
+                        <q-item-label caption>
+                            距離: {{ restaurant.distance_meters.toFixed(2) }} 公尺
+                        </q-item-label>
+                        <q-item-label caption>
+                            位置: ({{ restaurant.latitude }}, {{ restaurant.longitude }})
+                        </q-item-label>
+                    </q-item-section>
 
-                    <q-card-section class="q-pt-none">
-                        <p>評分: {{ restaurant.rating }} ({{ restaurant.user_ratings_total }} 評價)</p>
-                        <p>距離: {{ restaurant.distance_meters.toFixed(2) }} 公尺</p>
-                        <p>緯度: {{ restaurant.latitude }}, 經度: {{ restaurant.longitude }}</p>
-                    </q-card-section>
-
-                    <q-card-actions align="right">
-                        <q-btn flat round icon="favorite_border" color="grey" />
-                    </q-card-actions>
-                </q-card>
-            </div>
+                    <q-item-section side top>
+                        <q-btn flat round icon="favorite_border" color="grey" size="sm" />
+                    </q-item-section>
+                </q-item>
+            </q-list>
         </div>
+    </div>
     </q-page>
 </template>
-  
+
 <style scoped>
-/* 移除或調整 h1 樣式，Quasar 的 text-h4 已經提供很好的預設 */
-.text-h4 {
-    margin-top: 0; /* 重置可能存在的瀏覽器或全局樣式 */
+
+/* 可以為整個列表容器添加陰影和圓角 */
+.q-list-custom-style {
+    border-radius: 8px; /* 列表整體圓角 */
+    overflow: hidden; /* 確保內容在圓角內 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 8px 16px rgba(0, 0, 0, 0.1); /* 自定義陰影 */
 }
 
-/* 可以為卡片添加一些自定義樣式，例如最大寬度 */
-.my-card {
-    max-width: 600px; /* 限制卡片的最大寬度 */
-    width: 100%; /* 確保卡片在小屏幕上佔滿寬度 */
+/* 可以為每個列表項添加一些內邊距或高度調整 */
+.q-item-custom-style {
+  /* 例如，增加垂直內邊距 */
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
-p {
-  color: #333 !important;
+
+.q-list-custom-style .q-item-label {
+    color: #E0E0E0;
 }
-.text-dark {
-  color: #333 !important;
-}
+
 </style>
