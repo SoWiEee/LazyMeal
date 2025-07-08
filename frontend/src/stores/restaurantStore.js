@@ -11,24 +11,23 @@ export const useRestaurantStore = defineStore('restaurant', () => {
         error.value = null;
 
         try {
-        const backendUrl = `http://localhost:3000/api/watchlist/search-google?query=${encodeURIComponent(query)}&lat=${lat}&lon=${lon}`;
+            const backendUrl = `http://localhost:3000/api/watchlist/search-google?query=${encodeURIComponent(query)}&lat=${lat}&lon=${lon}`;
+            const response = await fetch(backendUrl);
         
-        const response = await fetch(backendUrl);
-        
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Failed to fetch restaurants.');
-        }
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to fetch restaurants.');
+            }
 
-        const data = await response.json();
-        restaurants.value = data;
+            const data = await response.json();
+            restaurants.value = data;
         
         } catch (err) {
-        console.error('Error fetching restaurants:', err);
-        error.value = err.message;
-        restaurants.value = [];
+            console.error('Error fetching restaurants:', err);
+            error.value = err.message;
+            restaurants.value = [];
         } finally {
-        isLoading.value = false;
+            isLoading.value = false;
         }
     }
 
