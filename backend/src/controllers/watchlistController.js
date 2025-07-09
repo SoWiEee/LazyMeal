@@ -1,10 +1,7 @@
 import { searchGoogleRestaurants, parseGoogleMapLink, getGooglePlaceDetails } from '../services/googleMapsService.js';
 import { upsertLocalRestaurant } from '../services/restaurantService.js';
+import { addRestaurantToWatchlist, getUserWatchlist, removeRestaurantFromWatchlist } from '../services/watchlistService.js';
 
-// TODO: get actual userId from JWT or Session
-const getUserId = (request) => {
-    return "123";
-};
 
 // Google Maps restaurant search
 export const searchGoogle = async (request, reply) => {
@@ -66,52 +63,6 @@ export const addToWatchlist = async (request, reply) => {
 	}
 };
 
-// import restaurant from link to watchlist
-export const importFromLink = async (request, reply) => {
-    const userId = getUserId(request);
-    const { link } = request.body;
-
-    if (!link) {
-        return reply.status(400).send({ message: 'Missing Google Maps link.' });
-    }
-
-    try {
-        const placeId = await parseGoogleMapLink(link);
-        if (!placeId) {
-            return reply.status(400).send({ message: 'Could not extract Place ID from the provided link.' });
-        }
-
-        const placeDetails = await getGooglePlaceDetails(placeId);
-
-        const cuisineTypes = placeDetails.types ? placeDetails.types.filter(type => !['point_of_interest', 'establishment', 'food'].includes(type)) : [];
-        const priceRangeMap = { 1: '低', 2: '中', 3: '高', 4: '高' }; // TODO: adjust or expand
-
-        const restaurantData = {
-            place_id: placeDetails.place_id,
-            name: placeDetails.name,
-            address: placeDetails.formatted_address,
-            latitude: placeDetails.geometry.location.lat,
-            longitude: placeDetails.geometry.location.lng,
-            rating: placeDetails.rating || null,
-            userRatingsTotal: placeDetails.user_ratings_total || null,
-            phone: placeDetails.international_phone_number || null,
-            cuisine: cuisineTypes,
-            priceRange: placeDetails.price_level ? priceRangeMap[placeDetails.price_level] : null,
-        };
-
-        const restaurant = await upsertLocalRestaurant(request.prisma, restaurantData);
-        await addRestaurantToWatchlist(request.prisma, userId, restaurant.id);
-		request.log.info(`[V] Restaurant imported from link and added to watchlist: ${restaurant.id}`);
-        reply.status(201).send({
-            message: 'Restaurant imported from link and added to watchlist!',
-            fullRestaurant: restaurant
-        });
-    } catch (error) {
-        request.log.error('[X] Error importing from link:', error);
-        reply.status(500).send({ message: 'Failed to import restaurant from link.', error: error.message });
-    }
-};
-
 // get user watchlist
 export const getWatchlist = async (request, reply) => {
 	const userId = getUserId(request);
@@ -140,7 +91,7 @@ export const getWatchlist = async (request, reply) => {
 
 // delete restaurant from watchlist
 export const removeFromWatchlist = async (request, reply) => {
-	const userId = getUserId(request);
+	const userId = 1;	// getUserId(request);
 	const { restaurantId } = request.params;
 	try {
 		await removeRestaurantFromWatchlist(request.prisma, userId, restaurantId);
