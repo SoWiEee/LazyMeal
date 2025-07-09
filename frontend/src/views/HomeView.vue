@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRestaurantStore } from '../stores/restaurantStore'
 import { useWatchlistStore } from '../stores/watchlistStore'
 import { useQuasar } from 'quasar'
@@ -12,9 +12,6 @@ const searchQuery = ref('麥當勞')
 const userLat = 22.6865
 const userLon = 120.3015
 
-// const watchlist = ref([])
-// const isWatchlistLoading = ref(false)
-
 const searchRestaurants = () => {
 	if (searchQuery.value.trim()) {
 		restaurantStore.fetchRestaurants(searchQuery.value, userLat, userLon)
@@ -24,14 +21,14 @@ const searchRestaurants = () => {
 	}
 }
 
-// 修改：愛心按鈕的點擊事件，直接呼叫 store 的 toggleWatchlist
+// 愛心按鈕的點擊事件，直接呼叫 store 的 toggleWatchlist
 const handleToggleWatchlist = async (restaurant) => {
 	const result = await watchlistStore.toggleWatchlist(restaurant)
 	if (result.success) {
 		$q.notify({
 			message: result.message,
-			color: result.message.includes('加入') ? 'green-4' : 'red-4',
-			icon: result.message.includes('加入') ? 'check_circle' : 'remove_circle',
+			color: result.message.includes('加入') || result.message.includes('已在口袋名單中') ? 'green-4' : 'red-4',
+			icon: result.message.includes('加入') || result.message.includes('已在口袋名單中') ? 'check_circle' : 'remove_circle',
 			position: 'top',
 			timeout: 1500
 		})
@@ -46,7 +43,7 @@ const handleToggleWatchlist = async (restaurant) => {
 	}
 }
 
-// 點擊右側卡片上的垃圾桶可移除該餐廳
+// 點擊右側卡片上的垃圾桶可移除該餐廳，直接呼叫 store 的 removeFromWatchlist
 const handleRemoveFromWatchlist = async (placeId) => {
 	const result = await watchlistStore.removeFromWatchlist(placeId)
 	if (result.success) {
@@ -65,39 +62,6 @@ const handleRemoveFromWatchlist = async (placeId) => {
 			position: 'top',
 			timeout: 2000
 		})
-	}
-}
-
-// 新增：處理「加入」按鈕點擊事件，呼叫 store 的 addCurrentWatchlistToBackend
-const handleAddAllToBackend = async () => {
-	if (watchlistStore.watchlist.length === 0) {
-		$q.notify({
-			message: '口袋名單目前是空的，無法同步。',
-			color: 'info',
-			icon: 'info',
-			position: 'top',
-			timeout: 2000
-		});
-		return;
-	}
-
-	const result = await watchlistStore.addCurrentWatchlistToBackend();
-	if (result.success) {
-		$q.notify({
-			message: result.message,
-			color: 'green-4',
-			icon: 'cloud_done',
-			position: 'top',
-			timeout: 3000
-		});
-	} else {
-		$q.notify({
-			message: result.message,
-			color: 'negative',
-			icon: 'warning',
-			position: 'top',
-			timeout: 3000
-		});
 	}
 }
 
@@ -202,8 +166,8 @@ onMounted(() => {
 		<div class="col-12 col-md-5">
 			<div class="row items-center q-mb-md no-wrap">
 				<h2 class="text-h5 q-mr-md q-my-none">我的口袋名單</h2>
-				<q-btn color="green" label="加入" icon="add" size="sm" @click="handleAddAllToBackend" :loading="watchlistStore.isSyncing"/>
 			</div>
+			
 			<q-banner v-if="watchlistStore.isLoading" rounded class="bg-blue-1 text-blue-8 q-mb-md">
 				<q-spinner-dots size="2em" /> 口袋名單載入中...
 			</q-banner>
