@@ -1,16 +1,19 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useRestaurantStore } from '../stores/restaurantStore'
+import { useWatchlistStore } from '../stores/watchlistStore'
 import { useQuasar } from 'quasar'
 
 const $q = useQuasar()
 
+const watchlistStore = useWatchlistStore()
 const restaurantStore = useRestaurantStore()
 const searchQuery = ref('麥當勞')
 const userLat = 22.6865
 const userLon = 120.3015
 
-const watchlist = ref([])
+// const watchlist = ref([])
+// const isWatchlistLoading = ref(false)
 
 const searchRestaurants = () => {
 	if (searchQuery.value.trim()) {
@@ -21,51 +24,86 @@ const searchRestaurants = () => {
 	}
 }
 
-// 修改：加入或移除口袋名單的方法
-const toggleWatchlist = (restaurant) => {
-	const index = watchlist.value.findIndex(item => item.place_id === restaurant.place_id)
-
-	if (index === -1) {
-		// 不存在於口袋名單，則加入
-		watchlist.value.push(restaurant)
+// 修改：愛心按鈕的點擊事件，直接呼叫 store 的 toggleWatchlist
+const handleToggleWatchlist = async (restaurant) => {
+	const result = await watchlistStore.toggleWatchlist(restaurant)
+	if (result.success) {
 		$q.notify({
-			message: `${restaurant.name} 已加入口袋名單！`,
-			color: 'green-4',
-			icon: 'check_circle',
+			message: result.message,
+			color: result.message.includes('加入') ? 'green-4' : 'red-4',
+			icon: result.message.includes('加入') ? 'check_circle' : 'remove_circle',
 			position: 'top',
 			timeout: 1500
 		})
 	} else {
-		// 已存在於口袋名單，則移除
-		watchlist.value.splice(index, 1)
 		$q.notify({
-			message: `${restaurant.name} 已從口袋名單移除。`,
-			color: 'red-4',
-			icon: 'remove_circle',
+			message: result.message,
+			color: 'negative',
+			icon: 'warning',
 			position: 'top',
-			timeout: 1500
+			timeout: 2000
 		})
 	}
 }
 
-// 新增：從口袋名單移除的方法 (用於右側卡片上的刪除按鈕)
-const removeFromWatchlist = (placeId) => {
-	const index = watchlist.value.findIndex(item => item.place_id === placeId)
-	if (index !== -1) {
-		const removedRestaurant = watchlist.value[index]
-		watchlist.value.splice(index, 1)
+// 點擊右側卡片上的垃圾桶可移除該餐廳
+const handleRemoveFromWatchlist = async (placeId) => {
+	const result = await watchlistStore.removeFromWatchlist(placeId)
+	if (result.success) {
 		$q.notify({
-			message: `${removedRestaurant.name} 已從口袋名單移除。`,
+			message: result.message,
 			color: 'red-4',
 			icon: 'remove_circle',
 			position: 'top',
 			timeout: 1500
 		})
+	} else {
+		$q.notify({
+			message: result.message,
+			color: 'negative',
+			icon: 'warning',
+			position: 'top',
+			timeout: 2000
+		})
+	}
+}
+
+// 新增：處理「加入」按鈕點擊事件，呼叫 store 的 addCurrentWatchlistToBackend
+const handleAddAllToBackend = async () => {
+	if (watchlistStore.watchlist.length === 0) {
+		$q.notify({
+			message: '口袋名單目前是空的，無法同步。',
+			color: 'info',
+			icon: 'info',
+			position: 'top',
+			timeout: 2000
+		});
+		return;
+	}
+
+	const result = await watchlistStore.addCurrentWatchlistToBackend();
+	if (result.success) {
+		$q.notify({
+			message: result.message,
+			color: 'green-4',
+			icon: 'cloud_done',
+			position: 'top',
+			timeout: 3000
+		});
+	} else {
+		$q.notify({
+			message: result.message,
+			color: 'negative',
+			icon: 'warning',
+			position: 'top',
+			timeout: 3000
+		});
 	}
 }
 
 onMounted(() => {
-  searchRestaurants()
+	searchRestaurants()
+	watchlistStore.fetchWatchlist()
 })
 </script>
 
@@ -142,18 +180,15 @@ onMounted(() => {
 								<q-item-label caption>
 									距離：{{ restaurant.distance_meters.toFixed(2) }} 公尺
 								</q-item-label>
-								<!-- <q-item-label caption>
-									位置： ({{ restaurant.latitude }}, {{ restaurant.longitude }})
-								</q-item-label> -->
 							</q-item-section>
 							<q-item-section side top>
 								<q-btn
 									flat
 									round
-									:icon="watchlist.some(item => item.place_id === restaurant.place_id) ? 'favorite' : 'favorite_border'"
-									:color="watchlist.some(item => item.place_id === restaurant.place_id) ? 'red' : 'grey'"
+									:icon="watchlistStore.isRestaurantInWatchlist(restaurant.place_id) ? 'favorite' : 'favorite_border'"
+									:color="watchlistStore.isRestaurantInWatchlist(restaurant.place_id) ? 'red' : 'grey'"
 									size="sm"
-									@click.stop="toggleWatchlist(restaurant)"
+									@click.stop="handleToggleWatchlist(restaurant)"
 								/>
 							</q-item-section>
 						</q-item>
@@ -165,23 +200,32 @@ onMounted(() => {
 		<!-- section BB -->
 			
 		<div class="col-12 col-md-5">
-			<h2 class="text-h5 q-mb-md">我的口袋名單</h2>
-			<q-banner v-if="watchlist.length === 0" rounded class="bg-blue-1 text-blue-8 q-mb-md">
+			<div class="row items-center q-mb-md no-wrap">
+				<h2 class="text-h5 q-mr-md q-my-none">我的口袋名單</h2>
+				<q-btn color="green" label="加入" icon="add" size="sm" @click="handleAddAllToBackend" :loading="watchlistStore.isSyncing"/>
+			</div>
+			<q-banner v-if="watchlistStore.isLoading" rounded class="bg-blue-1 text-blue-8 q-mb-md">
+				<q-spinner-dots size="2em" /> 口袋名單載入中...
+			</q-banner>
+			<q-banner v-else-if="watchlistStore.error" rounded class="bg-red-1 text-red-8 q-mb-md">
+				<q-icon name="error" color="red" /> 錯誤: {{ watchlistStore.error }}
+			</q-banner>
+			<q-banner v-else-if="watchlistStore.watchlist.length === 0" rounded class="bg-blue-1 text-blue-8 q-mb-md">
 				<q-icon name="info" color="blue" /> 口袋名單是空的，點擊愛心加入吧！
 			</q-banner>
 
 			<div class="row q-col-gutter-sm">
-				<div class="col-12 col-sm-6" v-for="item in watchlist" :key="item.place_id">
+				<div class="col-12 col-sm-6" v-for="item in watchlistStore.watchlist" :key="item.place_id">
 					<q-card flat bordered class="watchlist-card">
-						<q-card-section>
-							<div class="text-h6">{{ item.name }}</div>
-							<div class="text-caption text-grey-7">地址: {{ item.address }}</div>
-							<div class="text-caption text-grey-7">評分: {{ item.rating }} ({{ item.user_ratings_total }} 評價)</div>
-							<div class="text-caption text-grey-7">距離: {{ item.distance_meters.toFixed(2) }} 公尺</div>
-						</q-card-section>
-						<q-card-actions align="right">
-							<q-btn flat round icon="delete" color="grey" size="sm" @click="removeFromWatchlist(item.place_id)" />
-						</q-card-actions>
+					<q-card-section>
+						<div class="text-h6">{{ item.name }}</div>
+						<div class="text-caption text-grey-7">地址：{{ item.address }}</div>
+						<div class="text-caption text-grey-7">評分：{{ item.rating }} ({{ item.user_ratings_total }} 評價)</div>
+						<div class="text-caption text-grey-7">距離：{{ item.distance_meters.toFixed(2) }} 公尺</div>
+					</q-card-section>
+					<q-card-actions align="right">
+						<q-btn flat round icon="delete" color="grey" size="sm" @click="handleRemoveFromWatchlist(item.place_id)" />
+					</q-card-actions>
 					</q-card>
 				</div>
 			</div>
@@ -195,12 +239,11 @@ onMounted(() => {
 .q-list-custom-style {
 	border-radius: 8px; /* 列表整體圓角 */
 	overflow: hidden; /* 確保內容在圓角內 */
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 8px 16px rgba(0, 0, 0, 0.1); /* 自定義陰影 */
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 /* 可以為每個列表項添加一些內邊距或高度調整 */
 .q-item-custom-style {
-  /* 例如，增加垂直內邊距 */
 	padding-top: 10px;
 	padding-bottom: 10px;
 }
