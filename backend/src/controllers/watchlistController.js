@@ -1,7 +1,8 @@
 import { searchGoogleRestaurants, parseGoogleMapLink, getGooglePlaceDetails } from '../services/googleMapsService.js';
-import { upsertLocalRestaurant } from '../services/restaurantService.js';
 import { addRestaurantToWatchlist, getUserWatchlist, removeRestaurantFromWatchlist } from '../services/watchlistService.js';
-
+import pkg from '@prisma/client';
+const { PrismaClientKnownRequestError } = pkg;
+import { upsertLocalRestaurant } from '../services/restaurantService.js';
 
 // Google Maps restaurant search
 export const searchGoogle = async (request, reply) => {
@@ -34,7 +35,7 @@ export const searchGoogle = async (request, reply) => {
 
 // add restaurant to watchlist
 export const addToWatchlist = async (request, reply) => {
-	const userId = getUserId(request);
+	const userId = "1337";	// getUserId(request);
 	try {
 		const { place_id, name, address, latitude, longitude, rating, user_ratings_total } = request.body;
 		if (!place_id || !name || !address || typeof latitude !== 'number' || typeof longitude !== 'number') {
@@ -55,19 +56,38 @@ export const addToWatchlist = async (request, reply) => {
 		});
 		request.log.info(`[V] Restaurant added to watchlist: ${restaurant.id}`);
 	} catch (error) {
-		if (error instanceof request.prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+		if (error instanceof PrismaClientKnownRequestError && error.code === 'P2002') {
 			return reply.status(409).send({ message: 'Restaurant already in your watchlist.' });
 		}
-		request.log.error('Error adding restaurant to watchlist:', error);
+
+        request.log.error('Error adding restaurant to watchlist:', error);
+		console.error('Full error stack from addToWatchlist:', error);
+
 		reply.status(500).send({ message: 'Failed to add restaurant to watchlist.', error: error.message });
 	}
 };
 
 // get user watchlist
 export const getWatchlist = async (request, reply) => {
-	const userId = getUserId(request);
+	const userId = "1337";	// temporialrily set userId to 1337 for testing
 	try {
+
+		request.log.info(`[DEBUG] Entering getWatchlist.`);
+        request.log.info(`[DEBUG] userId: ${userId}`);
+        request.log.info(`[DEBUG] request.prisma is available: ${!!request.prisma}`);
+        request.log.info(`[DEBUG] typeof request.prisma: ${typeof request.prisma}`);
+
+        // --- 臨時模擬 getUserWatchlist 的行為 ---
+        if (!request.prisma.userRestaurant) {
+            request.log.error(`[CRITICAL] request.prisma.userRestaurant is UNDEFINED!`);
+            throw new Error("Prisma client does not have 'userRestaurant' model. Check Prisma setup.");
+        }
+
 		const watchlist = await getUserWatchlist(request.prisma, userId);
+
+		request.log.info(`[TEST] Watchlist type: ${typeof watchlist}`);
+        request.log.info(`[TEST] Watchlist content: ${JSON.stringify(watchlist, null, 2)}`);
+
 		const formattedWatchlist = watchlist.map(item => ({
 			id: item.restaurant.id,
 			googlePlaceId: item.restaurant.googlePlaceId,
@@ -91,7 +111,7 @@ export const getWatchlist = async (request, reply) => {
 
 // delete restaurant from watchlist
 export const removeFromWatchlist = async (request, reply) => {
-	const userId = 1;	// getUserId(request);
+	const userId = 1337;	// getUserId(request);
 	const { restaurantId } = request.params;
 	try {
 		await removeRestaurantFromWatchlist(request.prisma, userId, restaurantId);
