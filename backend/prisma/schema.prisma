@@ -14,7 +14,7 @@ model Restaurant {
 	id          String    @id @default(uuid())
 	name        String
 	cuisine     String[]  // 例如: ["中式", "西式"]
-	priceRange  String    // 例如: "低", "中", "高" (可選，根據 Google Maps 數據決定是否需要)
+	priceRange  String?    // 例如: "低", "中", "高" (可選，根據 Google Maps 數據決定是否需要)
 	latitude    Float
 	longitude   Float
 	address     String?
