@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client';
 
 // get random restaurant
-export async function getRandomRestaurant(prisma, whereClause) {
+export const getRandomRestaurant = async (prisma, whereClause) => {
 	const countResult = await prisma.$queryRaw(Prisma.sql`
 		SELECT COUNT(*) FROM "restaurants"
 		${whereClause}
@@ -25,7 +25,7 @@ export async function getRandomRestaurant(prisma, whereClause) {
 }
 
 // get all restaurants (basic search)
-export async function getAllRestaurants(prisma, whereClause) {
+export const getAllRestaurants = async (prisma, whereClause) => {
 	const restaurants = await prisma.$queryRaw(Prisma.sql`
 		SELECT * FROM "restaurants"
 		${whereClause}
@@ -33,49 +33,77 @@ export async function getAllRestaurants(prisma, whereClause) {
 	return restaurants;
 }
 
-// create or update local restaurant record (when importing from Google Maps)
-export async function upsertLocalRestaurant(prisma, restaurantData) {
-	const { place_id, name, address, latitude, longitude, rating, userRatingsTotal, phone, cuisine, priceRange } = restaurantData;
+// create or update local restaurant record
+export const upsertLocalRestaurant = async (prisma, restaurantData) => {
+	const { place_id, name, address, latitude, longitude, rating, user_ratings_total, cuisine, priceRange } = restaurantData;
+	return prisma.restaurant.upsert({
+        where: { googlePlaceId: place_id },
+        update: {
+            name: name,
+            address: address,
+            longitude: longitude,
+            latitude: latitude,
+            rating: rating,
+            userRatingsTotal: user_ratings_total,
+            cuisine: cuisine,
+            priceRange: priceRange,
+        },
+        create: {
+            googlePlaceId: place_id,
+            name: name,
+            address: address,
+            latitude: latitude,
+            longitude: longitude,
+            rating: rating,
+            userRatingsTotal: user_ratings_total,
+            cuisine: cuisine || [],
+            priceRange: priceRange,
+        },
+    });
+};
 
-	const existingRestaurant = await prisma.restaurant.findUnique({
-		where: { googlePlaceId: place_id },
-	});
+// export async function upsertLocalRestaurant(prisma, restaurantData) {
+// 	const { place_id, name, address, latitude, longitude, rating, userRatingsTotal, phone, cuisine, priceRange } = restaurantData;
 
-	if (existingRestaurant) {
-		return prisma.restaurant.update({
-			where: { id: existingRestaurant.id },
-			data: {
-				name, address, latitude, longitude, rating, userRatingsTotal, phone, cuisine, priceRange
-			},
-		});
-	} else {
-		return prisma.restaurant.create({
-			data: {
-				googlePlaceId: place_id,
-				name, address, latitude, longitude, rating, userRatingsTotal, phone, cuisine, priceRange
-			},
-		});
-	}
-}
+// 	const existingRestaurant = await prisma.restaurant.findUnique({
+// 		where: { googlePlaceId: place_id },
+// 	});
+
+// 	if (existingRestaurant) {
+// 		return prisma.restaurant.update({
+// 			where: { id: existingRestaurant.id },
+// 			data: {
+// 				name, address, latitude, longitude, rating, userRatingsTotal, phone, cuisine, priceRange
+// 			},
+// 		});
+// 	} else {
+// 		return prisma.restaurant.create({
+// 			data: {
+// 				googlePlaceId: place_id,
+// 				name, address, latitude, longitude, rating, userRatingsTotal, phone, cuisine, priceRange
+// 			},
+// 		});
+// 	}
+// }
 
 // get single restaurant
-export async function getRestaurantById(prisma, id) {
+export const getRestaurantById = async (prisma, id) => {
     return prisma.restaurant.findUnique({
         where: { id },
     });
-}
+};
 
 // update restaurant
-export async function updateRestaurant(prisma, id, data) {
-    return prisma.restaurant.update({
-        where: { id },
-        data,
-    });
-}
+export const updateRestaurant = async (prisma, id, data) => {
+	return prisma.restaurant.update({
+		where: { id },
+		data,
+	});
+};
 
 // delete restaurant
-export async function deleteRestaurant(prisma, id) {
-    return prisma.restaurant.delete({
-        where: { id },
-    });
+export const deleteRestaurant = async (prisma, id) => {
+	return prisma.restaurant.delete({
+		where: { id },
+	});
 }
