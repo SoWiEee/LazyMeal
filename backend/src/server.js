@@ -7,7 +7,6 @@ import watchlistRoutes from './routes/watchlist.js';
 
 const fastify = Fastify({
 	logger: {
-		level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
 		transport: {
 			target: 'pino-pretty',
 			options: {
