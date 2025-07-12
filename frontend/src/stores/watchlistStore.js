@@ -6,11 +6,11 @@ const API_BASE_URL = 'http://localhost:3000/api/watchlist';
 
 export const useWatchlistStore = defineStore('watchlist', () => {
     const watchlist = ref([]);
-    const isLoading = ref(false);   // 用於 fetchWatchlist
+    const isLoading = ref(false);
     const error = ref(null);
 
     const isRestaurantInWatchlist = computed(() => (placeId) => {
-        return watchlist.value.some(item => item.place_id === placeId);
+        return watchlist.value.some(item => item.googlePlaceId === placeId);
     });
 
     const fetchWatchlist = async () => {
@@ -31,7 +31,17 @@ export const useWatchlistStore = defineStore('watchlist', () => {
         error.value = null;
         try {
             const response = await axios.post(`${API_BASE_URL}`, restaurant);
-            watchlist.value.push(response.data);
+
+            // test
+            if (response.data.fullRestaurant) {
+                watchlist.value.push(response.data);
+
+            } else if (response.data.restaurant && response.data.restaurant.restaurant) {
+                watchlist.value.push(response.data.restaurant.restaurant);
+            } else {
+                console.warn("Unexpected response data format from backend:", response.data);
+            }
+            
             return { success: true, message: `${restaurant.name} 已加入口袋名單！` };
         } catch(err) {
             if (err.response && err.response.status === 409) {
@@ -43,14 +53,14 @@ export const useWatchlistStore = defineStore('watchlist', () => {
         }
     };
 
-    const removeFromWatchlist = async (placeId) => {
+    const removeFromWatchlist = async (googlePlaceId) => {
         error.value = null;
         try{
-            await axios.delete(`${API_BASE_URL}/${placeId}`);
-            const index = watchlist.value.findIndex(item => item.place_id === placeId);
+            await axios.delete(`${API_BASE_URL}/${googlePlaceId}`);
+            const index = watchlist.value.findIndex(item => item.googlePlaceId === googlePlaceId);
             if(index !== -1) {
                 const removedRestaurant = watchlist.value[index];
-                watchlist.value.splice(index, 1); // 成功後更新 store 狀態
+                watchlist.value.splice(index, 1);
                 return { success: true, message: `${removedRestaurant.name} 已從口袋名單移除。` };
             }
             return { success: false, message: '餐廳不在口袋名單中。' };
