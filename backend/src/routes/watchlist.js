@@ -12,7 +12,7 @@ async function watchlistRoutes(fastify, options) {
 	fastify.get('/', getWatchlist);
 
 	// remove restaurant from watchlist
-	fastify.delete('/:restaurantId', removeFromWatchlist);
+	fastify.delete('/:googlePlaceId', removeFromWatchlist);
 }
 
 export default watchlistRoutes;
