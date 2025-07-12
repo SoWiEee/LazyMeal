@@ -388,29 +388,56 @@
 }
 ```
 
-### 獲取使用者口袋名單
+### 獲取使用者口袋名單（Finished）
 * URL：`/api/watchlist`
 * Method：`GET`
 * Description：獲取當前使用者收藏的所有餐廳列表。
+
+> 目前沒有管理使用者，預設是獲取 ID=1337 的口袋名單。
 
 **成功回應 (200 OK)**
 
 ```json
 [
-	{
-		"id": "local-restaurant-id-1",
-		"googlePlaceId": "ChIJwTSJiYYEbjQROLkM5AEfBX0",
-		"name": "McDonald's Kaohsiung Wufu",
-		"address": "No. 258號, Wufu 2nd Rd, Sinsing District, Kaohsiung City, Taiwan 800",
-		"rating": 3.8,
-		"userRatingsTotal": 2704,
-		"priceRange": "中",
-		"cuisine": ["速食"],
-		"latitude": 22.6236752,
-		"longitude": 120.3021634,
-		"addedAt": "2023-01-01T..."
-	},
-	// ... more
+    {
+        "id": "0031759b-18f7-4e9b-94f7-961b1e299a73",
+        "googlePlaceId": "ChIJN64Mm1kDbjQR5JTFxQ4Cx2U",
+        "name": "麥當勞-高雄瑞隆餐廳",
+        "address": "806台灣高雄市前鎮區瑞隆路432號1樓",
+        "rating": 3.9,
+        "userRatingsTotal": 3230,
+        "priceRange": null,
+        "cuisine": [],
+        "latitude": 22.6054811,
+        "longitude": 120.3296335,
+        "addedAt": "2025-07-12T13:20:13.489Z"
+    },
+    {
+        "id": "cdf166c7-b36e-4b8b-8bab-9577ed743e01",
+        "googlePlaceId": "ChIJMaim-2kFbjQRz4yV504Ve0s",
+        "name": "麥當勞-高雄民族餐廳－設有得來速",
+        "address": "813台灣高雄市左營區民族一路1026號",
+        "rating": 3.9,
+        "userRatingsTotal": 2817,
+        "priceRange": null,
+        "cuisine": [],
+        "latitude": 22.6824131,
+        "longitude": 120.3199997,
+        "addedAt": "2025-07-12T12:18:37.769Z"
+    },
+    {
+        "id": "c51a6549-e9d1-49fa-9877-51f2e9d2c441",
+        "googlePlaceId": "ChIJ48SQOvAEbjQREpDmZOhQ11U",
+        "name": "麥當勞-高雄天祥餐廳－設有得來速",
+        "address": "807台灣高雄市三民區天祥一路150號",
+        "rating": 3.9,
+        "userRatingsTotal": 2245,
+        "priceRange": null,
+        "cuisine": [],
+        "latitude": 22.6678956,
+        "longitude": 120.3188243,
+        "addedAt": "2025-07-12T12:12:58.811Z"
+    }
 ]
 ```
 
