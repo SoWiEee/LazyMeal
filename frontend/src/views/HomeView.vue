@@ -172,22 +172,26 @@ onMounted(() => {
 				<q-spinner-dots size="2em" /> 口袋名單載入中...
 			</q-banner>
 			<q-banner v-else-if="watchlistStore.error" rounded class="bg-red-1 text-red-8 q-mb-md">
-				<q-icon name="error" color="red" /> 錯誤: {{ watchlistStore.error }}
+				<q-icon name="error" color="red" /> 錯誤：{{ watchlistStore.error }}
 			</q-banner>
 			<q-banner v-else-if="watchlistStore.watchlist.length === 0" rounded class="bg-blue-1 text-blue-8 q-mb-md">
 				<q-icon name="info" color="blue" /> 口袋名單是空的，點擊愛心加入吧！
 			</q-banner>
 
 			<div class="row q-col-gutter-sm">
-				<div class="col-12 col-sm-6" v-for="item in watchlistStore.watchlist" :key="item.id">
+				<div
+					class="col-12 col-sm-6"
+					v-for="item in watchlistStore.watchlist"
+					:key="item.id"
+				>
 					<q-card flat bordered class="watchlist-card">
 					<q-card-section>
 						<div class="text-h6">{{ item.name }}</div>
 						<div class="text-caption text-grey-7">地址：{{ item.address }}</div>
 						<div class="text-caption text-grey-7">評分：{{ item.rating }} ({{ item.user_ratings_total }} 評價)</div>
 						<div class="text-caption text-grey-7">距離：{{ item.distance_meters ? item.distance_meters.toFixed(2) : 'N/A' }} 公尺</div>
-						<div>價位: {{ item.priceRange || '未提供' }} | 菜系: {{ item.cuisine && item.cuisine.length > 0 ? item.cuisine.join(', ') : '未分類' }}</div>
-						<div>加入時間: {{ new Date(item.addedAt).toLocaleString() }}</div>
+						<div>價位：{{ item.priceRange || '未提供' }} | 菜系：{{ item.cuisine && item.cuisine.length > 0 ? item.cuisine.join(', ') : '未分類' }}</div>
+						<div>加入時間：{{ new Date(item.addedAt).toLocaleString() }}</div>
 					</q-card-section>
 					<q-card-actions align="right">
 						<q-btn flat round icon="delete" color="grey" size="sm" @click="handleRemoveFromWatchlist(item.googlePlaceId)" />
