@@ -33,7 +33,7 @@ export const searchGoogle = async (request, reply) => {
     }
 };
 
-// add restaurant to watchlist
+// add restaurant to watchlist (update)
 export const addToWatchlist = async (request, reply) => {
 	// const userId = "1337";	// getUserId(request);
 	try {
