@@ -67,17 +67,20 @@ export const useWatchlistStore = defineStore('watchlist', () => {
         }
     };
 
-    // 傳送欲新增的餐廳物件
+    // 傳送欲新增的餐廳物件，從口袋名單新增/移除
     const toggleWatchlist = async (restaurant) => {
         error.value = null;
 
         const placeId = restaurant.place_id;
+        // 檢查是否在 watchlist 陣列
         const index = watchlist.value.findIndex(item => item.googlePlaceId === placeId);
 
         if (index === -1) {
+            // 不在名單 => 新增至資料庫
             const result = await addToWatchlist(restaurant);
+            // 已存在 => 用資料庫同步 watchlist 陣列
             if (result.reason === 'conflict') {
-                await fetchWatchlist(); // 重新同步
+                await fetchWatchlist();
                 return { success: true, message: `${restaurant.name} 已在口袋名單中，狀態已同步。` };
             }
             return result;
