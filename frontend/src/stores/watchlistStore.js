@@ -67,20 +67,22 @@ export const useWatchlistStore = defineStore('watchlist', () => {
         }
     };
 
+    // 傳送欲新增的餐廳物件
     const toggleWatchlist = async (restaurant) => {
         error.value = null;
 
-        const index = watchlist.value.findIndex(item => item.googlePlaceId === restaurant.place_id);
+        const placeId = restaurant.place_id;
+        const index = watchlist.value.findIndex(item => item.googlePlaceId === placeId);
 
         if (index === -1) {
             const result = await addToWatchlist(restaurant);
-            if (!result.success && result.message.includes('已在口袋名單中')) {
-                watchlist.value.push(restaurant);
-                return { success: true, message: `${restaurant.name} 已在口袋名單中，已同步前端狀態。` };
+            if (result.reason === 'conflict') {
+                await fetchWatchlist(); // 重新同步
+                return { success: true, message: `${restaurant.name} 已在口袋名單中，狀態已同步。` };
             }
             return result;
         } else {
-            return await removeFromWatchlist(restaurant.place_id);
+            return await removeFromWatchlist(placeId);
         }
     };
 
