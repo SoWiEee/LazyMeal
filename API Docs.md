@@ -267,13 +267,13 @@
 
 ```json
 {
-    "place_id": "ChIJzW_WJgwFbjQRMgZRFE_9pgA",
-    "name": "麥當勞－高雄博愛二餐廳－設有得來速",
-    "address": "813台灣高雄市左營區博愛三路225號",
-    "latitude": 22.6742789,
-    "longitude": 120.3047002,
-    "rating": 4.1,
-    "user_ratings_total": 3842,
+    "place_id": "ChIJN64Mm1kDbjQR5JTFxQ4Cx2U",
+    "name": "麥當勞-高雄瑞隆餐廳",
+    "address": "806台灣高雄市前鎮區瑞隆路432號1樓",
+    "latitude": 22.6054811,
+    "longitude": 120.3296335,
+    "rating": 3.9,
+    "user_ratings_total": 3230
 }
 ```
 
@@ -282,15 +282,51 @@
 ```json
 {
 	"message": "Restaurant added to watchlist successfully!",
-	"restaurant": { /* UserRestaurant 關聯物件 */ },
-	"fullRestaurant": { /* Restaurant 完整物件，包含本地 ID 等 */ }
+	"restaurant": {
+		"id": "2125ae13-b8e3-4e7d-959e-fcf56ee23d27",
+		"userId": "1337",
+		"restaurantId": "0031759b-18f7-4e9b-94f7-961b1e299a73",
+		"addedAt": "2025-07-12T13:20:13.489Z",
+		"restaurant": {
+			"id": "0031759b-18f7-4e9b-94f7-961b1e299a73",
+			"name": "麥當勞-高雄瑞隆餐廳",
+			"cuisine": [],
+			"priceRange": null,
+			"latitude": 22.6054811,
+			"longitude": 120.3296335,
+			"address": "806台灣高雄市前鎮區瑞隆路432號1樓",
+			"phone": null,
+			"googlePlaceId": "ChIJN64Mm1kDbjQR5JTFxQ4Cx2U",
+			"rating": 3.9,
+			"userRatingsTotal": 3230,
+			"createdAt": "2025-07-12T13:20:13.487Z",
+			"updatedAt": "2025-07-12T13:20:13.487Z"
+		}
+	},
+	"fullRestaurant": {
+			"id": "0031759b-18f7-4e9b-94f7-961b1e299a73",
+			"name": "麥當勞-高雄瑞隆餐廳",
+			"cuisine": [],
+			"priceRange": null,
+			"latitude": 22.6054811,
+			"longitude": 120.3296335,
+			"address": "806台灣高雄市前鎮區瑞隆路432號1樓",
+			"phone": null,
+			"googlePlaceId": "ChIJN64Mm1kDbjQR5JTFxQ4Cx2U",
+			"rating": 3.9,
+			"userRatingsTotal": 3230,
+			"createdAt": "2025-07-12T13:20:13.487Z",
+			"updatedAt": "2025-07-12T13:20:13.487Z"
+	}
 }
 ```
 
 **錯誤回應 (400 Bad Request)**
 ```json
 {
-	"message": "Missing required restaurant data."
+    "statusCode": 400,
+    "error": "Bad Request",
+    "message": "Expected double-quoted property name in JSON at position 231 (line 9 column 1)"	// error detail
 }
 ```
 
