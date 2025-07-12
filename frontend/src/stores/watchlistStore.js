@@ -27,25 +27,21 @@ export const useWatchlistStore = defineStore('watchlist', () => {
         }
     };
 
+    // 傳送欲新增的餐廳物件 OK
     const addToWatchlist = async (restaurant) => {
         error.value = null;
         try {
             const response = await axios.post(`${API_BASE_URL}`, restaurant);
 
-            // test
             if (response.data.fullRestaurant) {
-                watchlist.value.push(response.data);
-
-            } else if (response.data.restaurant && response.data.restaurant.restaurant) {
-                watchlist.value.push(response.data.restaurant.restaurant);
-            } else {
-                console.warn("Unexpected response data format from backend:", response.data);
+                // 把詳細餐廳物件推入 watchlist
+                watchlist.value.push(response.data.fullRestaurant);
+                return { success: true, message: `${restaurant.name} 已加入口袋名單！` };
             }
             
-            return { success: true, message: `${restaurant.name} 已加入口袋名單！` };
         } catch(err) {
             if (err.response && err.response.status === 409) {
-                return { success: false, message: `${restaurant.name} 已在口袋名單中。` };
+                return { success: false, reason: 'conflict', message: `${restaurant.name} 已在口袋名單中。` };
             }
             error.value = err.response?.data?.message || err.message || '加入口袋名單失敗。';
             console.error('Error adding restaurant to backend:', err);
@@ -71,11 +67,10 @@ export const useWatchlistStore = defineStore('watchlist', () => {
         }
     };
 
-
     const toggleWatchlist = async (restaurant) => {
         error.value = null;
 
-        const index = watchlist.value.findIndex(item => item.place_id === restaurant.place_id);
+        const index = watchlist.value.findIndex(item => item.googlePlaceId === restaurant.place_id);
 
         if (index === -1) {
             const result = await addToWatchlist(restaurant);
