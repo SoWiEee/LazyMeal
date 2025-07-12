@@ -28,7 +28,7 @@
 		"priceRange": "中",
 		"latitude": 22.6596457,
 		"longitude": 120.3638982,
-		"address": "833, Taiwan, Kaohsiung City, Niaosong District, 中正路251號",
+		"address": "833台灣高雄市鳥松區中正路251號",
 		"phone": "07-732-1390",
 		"googlePlaceId": "ChIJpSEoBS9AbjQRhMZ8OYlllbc",
 		"rating": 4.1,
@@ -57,7 +57,7 @@
 
 ```json
 {
-	"id": "uuid-random",
+	"id": ""ChIJ65KkIAwFbjQRXSOTYACKSSg"",
 	"name": "麥當勞-高雄鳥松餐廳",
 	"cuisine": ["速食"],
 	"priceRange": "中",
@@ -449,10 +449,12 @@
 }
 ```
 
-### 從口袋名單中刪除餐廳
+### 從口袋名單中刪除餐廳（OK）
 * URL：`/api/watchlist/:restaurantId`
 * Method：`DELETE`
 * Description：從當前使用者的口袋名單中移除指定 ID 的餐廳。
+
+> 傳入 unique(database) ID 來刪除資料。
 
 **URL Parameters**
 
