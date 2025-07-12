@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
+const API_BASE_URL = 'http://localhost:3000/api/watchlist/search-google';
+
 export const useRestaurantStore = defineStore('restaurant', () => {
     const restaurants = ref([]);
     const isLoading = ref(false);
@@ -11,7 +13,7 @@ export const useRestaurantStore = defineStore('restaurant', () => {
         error.value = null;
 
         try {
-            const backendUrl = `http://localhost:3000/api/watchlist/search-google?query=${encodeURIComponent(query)}&lat=${lat}&lon=${lon}`;
+            const backendUrl = `${API_BASE_URL}?query=${encodeURIComponent(query)}&lat=${lat}&lon=${lon}`;
             const response = await fetch(backendUrl);
         
             if (!response.ok) {
