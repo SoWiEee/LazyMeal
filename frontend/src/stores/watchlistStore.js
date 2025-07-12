@@ -49,18 +49,27 @@ export const useWatchlistStore = defineStore('watchlist', () => {
         }
     };
 
-    const removeFromWatchlist = async (googlePlaceId) => {
+    // 根據餐廳 unique ID 刪除資料
+    const removeFromWatchlist = async (placeId) => {
         error.value = null;
-        try{
-            await axios.delete(`${API_BASE_URL}/${googlePlaceId}`);
-            const index = watchlist.value.findIndex(item => item.googlePlaceId === googlePlaceId);
-            if(index !== -1) {
-                const removedRestaurant = watchlist.value[index];
-                watchlist.value.splice(index, 1);
-                return { success: true, message: `${removedRestaurant.name} 已從口袋名單移除。` };
-            }
-            return { success: false, message: '餐廳不在口袋名單中。' };
+
+        const index = watchlist.value.findIndex(item => item.googlePlaceId === placeId);
+        // 不存在名單的餐廳 => 直接回傳
+        if (index === -1) {
+            console.warn(`Attempted to remove a restaurant not in the local watchlist: ${googlePlaceId}`);
+            return { success: false, message: '餐廳不在本地口袋名單中。' };
+        }
+
+        // 先更新 watchlist 陣列
+        const removedRestaurant = watchlist.value.splice(index, 1)[0];
+
+        try {
+            await axios.delete(`${API_BASE_URL}/${placeId}`);
+            return { success: true, message: `${removedRestaurant.name} 已從口袋名單移除。` };
+
         } catch (err) {
+            // 請求失敗 => 將剛剛移除的項目加回去
+            watchlist.value.splice(index, 0, removedRestaurant);
             error.value = err.response?.data?.message || err.message || '移除口袋名單失敗。';
             console.error('[X] Error removing from watchlist:', err);
             return { success: false, message: `移除口袋名單失敗: ${error.value}` };
