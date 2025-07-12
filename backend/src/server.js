@@ -7,6 +7,7 @@ import watchlistRoutes from './routes/watchlist.js';
 
 const fastify = Fastify({
 	logger: {
+		level: 'debug',
 		transport: {
 			target: 'pino-pretty',
 			options: {
@@ -20,7 +21,7 @@ const fastify = Fastify({
 
 // CORS
 fastify.register(cors, {
-  	origin: process.env.CORS_ORIGIN || '*',
+  	origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
   	methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   	allowedHeaders: ['Content-Type', 'Authorization'],
   	credentials: true,
@@ -28,7 +29,6 @@ fastify.register(cors, {
 
 fastify.register(prismaPlugin);
 
-// register restaurant routes
 fastify.register(restaurantRoutes, { prefix: '/api/restaurants' });
 fastify.register(watchlistRoutes, { prefix: '/api/watchlist' });
 
