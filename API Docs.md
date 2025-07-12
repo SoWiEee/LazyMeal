@@ -195,7 +195,7 @@
 ```
 
 
-## 使用者口袋名單相關 API `/api/watchlist`
+## 使用者口袋名單相關 API `/api/watchlist`（KeyPoint）
 * 這些 API 專門用於管理使用者的個人化口袋名單。
 
 ### 搜尋 Google Maps 餐廳（Finished）
@@ -257,21 +257,23 @@
 ```
 
 ### 添加餐廳到口袋名單
-* URL：`/api/watchlist/add-to-watchlist`
+* URL：`/api/watchlist/`
 * Method：`POST`
 * Description：將 Google Maps 搜尋結果中的餐廳添加到當前使用者的口袋名單。如果餐廳尚未存在於本地資料庫，將先新增。
+
+> 接收 `restaurant` 物件(body)，並在本地資料庫紀錄該餐廳資訊，並回傳完整物件 `fullRestaurant` 給前端
 
 **Request Body**
 
 ```json
 {
-	"place_id": "ChIJwTSJiYYEbjQROLkM5AEfBX0",
-	"name": "McDonald's Kaohsiung Wufu",
-	"address": "No. 258號, Wufu 2nd Rd, Sinsing District, Kaohsiung City, Taiwan 800",
-	"latitude": 22.6236752,
-	"longitude": 120.3021634,
-	"rating": 3.8,
-	"user_ratings_total": 2704,
+    "place_id": "ChIJzW_WJgwFbjQRMgZRFE_9pgA",
+    "name": "麥當勞－高雄博愛二餐廳－設有得來速",
+    "address": "813台灣高雄市左營區博愛三路225號",
+    "latitude": 22.6742789,
+    "longitude": 120.3047002,
+    "rating": 4.1,
+    "user_ratings_total": 3842,
 }
 ```
 
