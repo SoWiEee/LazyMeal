@@ -2,71 +2,56 @@
 import { onMounted, ref } from 'vue'
 import { useRestaurantStore } from '../stores/restaurantStore'
 import { useWatchlistStore } from '../stores/watchlistStore'
-import { useQuasar } from 'quasar'
+import { useNotification } from '../useNotification'
 
-const $q = useQuasar()
-
+const { showNotification } = useNotification()
 const watchlistStore = useWatchlistStore()
 const restaurantStore = useRestaurantStore()
 const searchQuery = ref('麥當勞')
-const userLat = 22.6865
-const userLon = 120.3015
+const userLat = ref(22.6865)	// 預設緯度
+const userLon = ref(120.3015)	// 預設經度
 
 const searchRestaurants = () => {
 	if (searchQuery.value.trim()) {
-		restaurantStore.fetchRestaurants(searchQuery.value, userLat, userLon)
+		restaurantStore.fetchRestaurants(searchQuery.value, userLat.value, userLon.value)
 	} else {
 		restaurantStore.restaurants = []
 		restaurantStore.error = '請輸入餐廳名稱進行搜索。'
 	}
 }
 
-// 愛心按鈕的點擊事件，直接呼叫 store 的 toggleWatchlist
+// 處理愛心按鈕點擊事件
 const handleToggleWatchlist = async (restaurant) => {
 	const result = await watchlistStore.toggleWatchlist(restaurant)
-	if (result.success) {
-		$q.notify({
-			message: result.message,
-			color: result.message.includes('加入') || result.message.includes('已在口袋名單中') ? 'green-4' : 'red-4',
-			icon: result.message.includes('加入') || result.message.includes('已在口袋名單中') ? 'check_circle' : 'remove_circle',
-			position: 'top',
-			timeout: 1500
-		})
-	} else {
-		$q.notify({
-			message: result.message,
-			color: 'negative',
-			icon: 'warning',
-			position: 'top',
-			timeout: 2000
-		})
-	}
+	showNotification(result)
 }
 
-// 點擊右側卡片上的垃圾桶可移除該餐廳，直接呼叫 store 的 removeFromWatchlist
+// 處理從口袋名單移除
 const handleRemoveFromWatchlist = async (placeId) => {
 	const result = await watchlistStore.removeFromWatchlist(placeId)
-	if (result.success) {
-		$q.notify({
-			message: result.message,
-			color: 'red-4',
-			icon: 'remove_circle',
-			position: 'top',
-			timeout: 1500
-		})
-	} else {
-		$q.notify({
-			message: result.message,
-			color: 'negative',
-			icon: 'warning',
-			position: 'top',
-			timeout: 2000
-		})
+	showNotification(result)
+}
+
+// 獲取使用者地理位置
+const getUserLocationAndSearch = () => {
+	if (navigator.geolocation) {
+		navigator.geolocation.getCurrentPosition(
+			(position) => {
+				userLat.value = position.coords.latitude
+				userLon.value = position.coords.longitude
+				searchRestaurants() // 獲取位置後再搜尋
+			},
+			() => {
+				showNotification({ success: false, message: '無法獲取您的位置，將使用預設地點搜尋。' })
+				searchRestaurants() // 失敗時使用預設位置搜尋
+			}
+		)
 	}
 }
 
 onMounted(() => {
 	searchRestaurants()
+	// getUserLocationAndSearch()
 	watchlistStore.fetchWatchlist()
 })
 </script>
@@ -207,7 +192,7 @@ onMounted(() => {
 <style scoped>
 
 .q-list-custom-style {
-	border-radius: 8px; /* 列表整體圓角 */
+	border-radius: 8px;
 	overflow: hidden; /* 確保內容在圓角內 */
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 8px 16px rgba(0, 0, 0, 0.1);
 }
@@ -224,8 +209,6 @@ onMounted(() => {
 
 .watchlist-card {
 	border-radius: 8px;
-	/* 可以根據需要添加陰影，但由於是小卡片，flat bordered 可能就夠了 */
-	/* box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); */
 }
 
 </style>
