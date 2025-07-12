@@ -27,7 +27,7 @@ export const useWatchlistStore = defineStore('watchlist', () => {
         }
     };
 
-    // 傳送欲新增的餐廳物件 OK
+    // 傳送欲新增的餐廳物件 - OK
     const addToWatchlist = async (restaurant) => {
         error.value = null;
         try {
@@ -49,7 +49,7 @@ export const useWatchlistStore = defineStore('watchlist', () => {
         }
     };
 
-    // 根據餐廳 unique ID 刪除資料
+    // 根據餐廳 unique ID 刪除資料 - OK
     const removeFromWatchlist = async (placeId) => {
         error.value = null;
 
@@ -76,7 +76,7 @@ export const useWatchlistStore = defineStore('watchlist', () => {
         }
     };
 
-    // 傳送欲新增的餐廳物件，從口袋名單新增/移除
+    // 傳送欲新增的餐廳物件，從口袋名單新增/移除 - OK
     const toggleWatchlist = async (restaurant) => {
         error.value = null;
 
