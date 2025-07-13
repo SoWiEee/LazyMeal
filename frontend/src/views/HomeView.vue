@@ -3,6 +3,8 @@ import { onMounted, ref } from 'vue'
 import { useRestaurantStore } from '../stores/restaurantStore'
 import { useWatchlistStore } from '../stores/watchlistStore'
 import { useNotification } from '../useNotification'
+import WatchlistCard from '../components/WatchlistCard.vue'
+import RestaurantList from '../components/RestaurantList.vue'
 
 const { showNotification } = useNotification()
 const watchlistStore = useWatchlistStore()
@@ -18,18 +20,6 @@ const searchRestaurants = () => {
 		restaurantStore.restaurants = []
 		restaurantStore.error = '請輸入餐廳名稱進行搜索。'
 	}
-}
-
-// 處理愛心按鈕點擊事件
-const handleToggleWatchlist = async (restaurant) => {
-	const result = await watchlistStore.toggleWatchlist(restaurant)
-	showNotification(result)
-}
-
-// 處理從口袋名單移除
-const handleRemoveFromWatchlist = async (placeId) => {
-	const result = await watchlistStore.removeFromWatchlist(placeId)
-	showNotification(result)
 }
 
 // 獲取使用者地理位置
@@ -106,44 +96,7 @@ onMounted(() => {
 			</div>
 
 			<!-- section C -->
-
-			<div class="row q-mt-md">
-				<div class="col-12">
-					<q-list bordered separator class="q-list-custom-style">
-						<q-item
-							v-for="restaurant in restaurantStore.restaurants"
-							:key="restaurant.place_id"
-							clickable v-ripple
-							class="q-item-custom-style"
-						>
-							<q-item-section>
-								<q-item-label lines="1" class="text-h6 text-weight-medium">
-									{{ restaurant.name }}
-								</q-item-label>
-								<q-item-label caption lines="2">
-									地址：{{ restaurant.address }}
-								</q-item-label>
-								<q-item-label caption>
-									評分：{{ restaurant.rating }} ({{ restaurant.user_ratings_total }} 評價)
-								</q-item-label>
-								<q-item-label caption>
-									距離：{{ restaurant.distance_meters.toFixed(2) }} 公尺
-								</q-item-label>
-							</q-item-section>
-							<q-item-section side top>
-								<q-btn
-									flat
-									round
-									:icon="watchlistStore.isRestaurantInWatchlist(restaurant.place_id) ? 'favorite' : 'favorite_border'"
-									:color="watchlistStore.isRestaurantInWatchlist(restaurant.place_id) ? 'red' : 'grey'"
-									size="sm"
-									@click.stop="handleToggleWatchlist(restaurant)"
-								/>
-							</q-item-section>
-						</q-item>
-					</q-list>
-				</div>
-			</div>
+			<RestaurantList/>
 		</div>
 
 		<!-- section BB -->
@@ -163,27 +116,8 @@ onMounted(() => {
 				<q-icon name="info" color="blue" /> 口袋名單是空的，點擊愛心加入吧！
 			</q-banner>
 
-			<div class="row q-col-gutter-sm">
-				<div
-					class="col-12 col-sm-6"
-					v-for="item in watchlistStore.watchlist"
-					:key="item.id"
-				>
-					<q-card flat bordered class="watchlist-card">
-					<q-card-section>
-						<div class="text-h6">{{ item.name }}</div>
-						<div class="text-caption text-grey-7">地址：{{ item.address }}</div>
-						<div class="text-caption text-grey-7">評分：{{ item.rating }} ({{ item.user_ratings_total }} 評價)</div>
-						<div class="text-caption text-grey-7">距離：{{ item.distance_meters ? item.distance_meters.toFixed(2) : 'N/A' }} 公尺</div>
-						<div>價位：{{ item.priceRange || '未提供' }} | 菜系：{{ item.cuisine && item.cuisine.length > 0 ? item.cuisine.join(', ') : '未分類' }}</div>
-						<div>加入時間：{{ new Date(item.addedAt).toLocaleString() }}</div>
-					</q-card-section>
-					<q-card-actions align="right">
-						<q-btn flat round icon="delete" color="grey" size="sm" @click="handleRemoveFromWatchlist(item.googlePlaceId)" />
-					</q-card-actions>
-					</q-card>
-				</div>
-			</div>
+			<!-- watchlist card component -->
+			<WatchlistCard/>
 		</div>
 	</div>
 	</q-page>
