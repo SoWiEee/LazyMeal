@@ -1,3 +1,17 @@
+<script>
+import { useWatchlistStore } from '../stores/watchlistStore'
+import { useNotification } from '../useNotification'
+
+const { showNotification } = useNotification()
+const watchlistStore = useWatchlistStore()
+
+// 處理從口袋名單移除
+const handleRemoveFromWatchlist = async (placeId) => {
+	const result = await watchlistStore.removeFromWatchlist(placeId)
+	showNotification(result)
+}
+</script>
+
 <template>
     <div class="row q-col-gutter-sm">
         <div
