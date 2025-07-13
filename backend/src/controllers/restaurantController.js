@@ -16,7 +16,7 @@ export const getRestaurants = async (request, reply) => {
 };
 
 // get random restaurant
-export const getRandom = async (request, reply) => {
+export const getRandomRestaurant = async (request, reply) => {
     try {
         const params = parseQueryParams(request.query);
         const whereClause = buildWhereClause(params);
@@ -50,23 +50,23 @@ export const getRestaurant = async (request, reply) => {
 };
 
 // update restaurant
-export const updateRest = async (request, reply) => { // avoid conflict with other update
-  try {
-    const { id } = request.params;
-    const updatedRestaurant = await updateRestaurant(request.prisma, id, request.body);
-    reply.send(updatedRestaurant);
+export const updateRestaurant = async (request, reply) => { // avoid conflict with other update
+    try {
+        const { id } = request.params;
+        const updatedRestaurant = await updateRestaurant(request.prisma, id, request.body);
+        reply.send(updatedRestaurant);
 
-  } catch (error) {
-    if (error instanceof request.prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
-        return reply.status(404).send({ message: 'Restaurant not found.' });
+    } catch (error) {
+        if (error instanceof request.prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+            return reply.status(404).send({ message: 'Restaurant not found.' });
+        }
+        request.log.error('Error updating restaurant:', error);
+        reply.status(500).send({ message: 'Error updating restaurant', error: error.message });
     }
-    request.log.error('Error updating restaurant:', error);
-    reply.status(500).send({ message: 'Error updating restaurant', error: error.message });
-  }
 };
 
 // delete restaurant
-export const deleteRest = async (request, reply) => { // avoid conflict with other delete
+export const deleteRestaurant = async (request, reply) => { // avoid conflict with other delete
     try {
         const { id } = request.params;
         await deleteRestaurant(request.prisma, id);
