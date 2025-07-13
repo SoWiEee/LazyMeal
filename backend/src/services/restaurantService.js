@@ -62,30 +62,6 @@ export const upsertLocalRestaurant = async (prisma, restaurantData) => {
     });
 };
 
-// export async function upsertLocalRestaurant(prisma, restaurantData) {
-// 	const { place_id, name, address, latitude, longitude, rating, userRatingsTotal, phone, cuisine, priceRange } = restaurantData;
-
-// 	const existingRestaurant = await prisma.restaurant.findUnique({
-// 		where: { googlePlaceId: place_id },
-// 	});
-
-// 	if (existingRestaurant) {
-// 		return prisma.restaurant.update({
-// 			where: { id: existingRestaurant.id },
-// 			data: {
-// 				name, address, latitude, longitude, rating, userRatingsTotal, phone, cuisine, priceRange
-// 			},
-// 		});
-// 	} else {
-// 		return prisma.restaurant.create({
-// 			data: {
-// 				googlePlaceId: place_id,
-// 				name, address, latitude, longitude, rating, userRatingsTotal, phone, cuisine, priceRange
-// 			},
-// 		});
-// 	}
-// }
-
 // get single restaurant
 export const getRestaurantById = async (prisma, id) => {
     return prisma.restaurant.findUnique({
