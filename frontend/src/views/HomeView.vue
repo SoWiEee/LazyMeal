@@ -5,6 +5,7 @@ import { useWatchlistStore } from '../stores/watchlistStore'
 import { useNotification } from '../useNotification'
 import WatchlistCard from '../components/WatchlistCard.vue'
 import RestaurantList from '../components/RestaurantList.vue'
+import RestaurantSearch from '../components/RestaurantSearch.vue'
 
 const { showNotification } = useNotification()
 const watchlistStore = useWatchlistStore()
@@ -55,30 +56,7 @@ onMounted(() => {
 		<div class="col-12 col-md-7">
 
 			<!-- section A -->
-			<div class="row q-mb-lg q-gutter-md items-center">
-				<div class="col-12 col-sm-8">
-					<q-input
-						outlined
-						v-model="searchQuery"
-						label="輸入餐廳名稱，例如：麥當勞"
-						clearable
-						@keyup.enter="searchRestaurants"
-					>
-						<template v-slot:append>
-							<q-icon name="restaurant" />
-						</template>
-					</q-input>
-				</div>
-				<div class="col-12 col-sm-auto">
-					<q-btn
-					color="primary"
-					label="搜尋"
-					@click="searchRestaurants"
-					:loading="restaurantStore.isLoading"
-					icon="search"
-					/>
-				</div>
-			</div>
+			<RestaurantSearch />
 
 			<!-- section B -->
 			<div class="row">
