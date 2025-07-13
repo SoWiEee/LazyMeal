@@ -2,47 +2,14 @@
 import { onMounted, ref } from 'vue'
 import { useRestaurantStore } from '../stores/restaurantStore'
 import { useWatchlistStore } from '../stores/watchlistStore'
-import { useNotification } from '../useNotification'
 import WatchlistCard from '../components/WatchlistCard.vue'
 import RestaurantList from '../components/RestaurantList.vue'
 import RestaurantSearch from '../components/RestaurantSearch.vue'
 
-const { showNotification } = useNotification()
 const watchlistStore = useWatchlistStore()
 const restaurantStore = useRestaurantStore()
-const searchQuery = ref('麥當勞')
-const userLat = ref(22.6865)	// 預設緯度
-const userLon = ref(120.3015)	// 預設經度
-
-const searchRestaurants = () => {
-	if (searchQuery.value.trim()) {
-		restaurantStore.fetchRestaurants(searchQuery.value, userLat.value, userLon.value)
-	} else {
-		restaurantStore.restaurants = []
-		restaurantStore.error = '請輸入餐廳名稱進行搜索。'
-	}
-}
-
-// 獲取使用者地理位置
-const getUserLocationAndSearch = () => {
-	if (navigator.geolocation) {
-		navigator.geolocation.getCurrentPosition(
-			(position) => {
-				userLat.value = position.coords.latitude
-				userLon.value = position.coords.longitude
-				searchRestaurants() // 獲取位置後再搜尋
-			},
-			() => {
-				showNotification({ success: false, message: '無法獲取您的位置，將使用預設地點搜尋。' })
-				searchRestaurants() // 失敗時使用預設位置搜尋
-			}
-		)
-	}
-}
 
 onMounted(() => {
-	searchRestaurants()
-	// getUserLocationAndSearch()
 	watchlistStore.fetchWatchlist()
 })
 </script>
@@ -53,7 +20,7 @@ onMounted(() => {
 	<div class="row q-col-gutter-md">
 
 		<!-- section AA -->
-		<div class="col-12 col-md-7">
+		<div class="col-12 col-md-5">
 
 			<!-- section A -->
 			<RestaurantSearch />
@@ -79,7 +46,7 @@ onMounted(() => {
 
 		<!-- section BB -->
 			
-		<div class="col-12 col-md-5">
+		<div class="col-12 col-md-7">
 			<div class="row items-center q-mb-md no-wrap">
 				<h2 class="text-h5 q-mr-md q-my-none">我的口袋名單</h2>
 			</div>
