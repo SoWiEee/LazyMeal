@@ -1,4 +1,4 @@
-<script>
+<script setup>
 import { useWatchlistStore } from '../stores/watchlistStore'
 import { useNotification } from '../useNotification'
 

@@ -1,11 +1,11 @@
-<script>
+<script setup>
 import { useWatchlistStore } from '../stores/watchlistStore'
 import { useRestaurantStore } from '../stores/restaurantStore'
 import { useNotification } from '../useNotification'
 
 const { showNotification } = useNotification()
-const restaurantStore = useRestaurantStore()
 const watchlistStore = useWatchlistStore()
+const restaurantStore = useRestaurantStore()
 
 // 處理愛心按鈕點擊事件
 const handleToggleWatchlist = async (restaurant) => {
