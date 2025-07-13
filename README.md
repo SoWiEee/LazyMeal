@@ -4,6 +4,9 @@
 # Introduction
 A web application for choose lunch/dinner easily !
 
+* [API Document]((https://github.com/SoWiEee/LazyMeal/blob/main/API%20Docs.md))
+* [DeepWiki](https://deepwiki.com/SoWiEee/LazyMeal)
+
 # Requirements
 * Node.js `v22.17.0`
 * PostgreSQL `v17.5`
@@ -14,11 +17,12 @@ A web application for choose lunch/dinner easily !
 
 ```Bash
 # clone repo
-$ git clone https://github.com/SoWiEee/LazyMeal.git
-$ cd /LazyMeal
+git clone https://github.com/SoWiEee/LazyMeal.git
+cd /LazyMeal
 
 # install dependencies
-$ npm install   # yarn install
+npm install
+yarn install
 ```
 
 2. Create `.env` file at `/backend`
@@ -27,28 +31,28 @@ $ npm install   # yarn install
 PORT = 3000
 HOST = 0.0.0.0
 
-DATABASE_URL = "postgresql://[使用者名稱]:[密碼]@[主機名稱]:[埠號]/[資料庫名稱]?schema=public"
-# example: DATABASE_URL = "postgresql://user:password@localhost:5432/mydatabase?schema=public"
+DATABASE_URL = "postgresql://[USERNAME]:[PASSWROD]@[HOSTNAME]:[PORT]/[DB_NAME]?schema=public"
+# e.g. "postgresql://foo:bar@localhost:5432/mydatabase?schema=public"
 
-CORS_ORIGIN = http://localhost:5173
+CORS_ORIGIN = [ALLOWED_ORIGIN]
 
-# Google Maps API Key
-# 請確保已在 Google Cloud Platform 啟用 Places API
-Maps_API_KEY = YOUR_API_KEY
+# Google Maps API Key (you should active Places API in GCP)
+Maps_API_KEY = YOUR_PLACES_API_KEY
 ```
 
 3. Initialize database:
-    * create empty table in PostgreSQL, like `restaurant_selector_db`
+    * create empty table in PostgreSQL, like `food_db`
     * Prisma migration：according `prisma/schema.prisma` to build scheme
 
 ```Bash
-$ npx prisma migrate dev --name init_database
+npx prisma migrate dev --name init_database
 ```
 
 4. Launch dev server (3000 port)
 
 ```Bash
-$ npm run dev   # yarn dev
+npm run dev
+yarn dev
 ```
 
 # Project Directory
