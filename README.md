@@ -4,7 +4,7 @@
 # Introduction
 A web application for choose lunch/dinner easily !
 
-* [API Document]((https://github.com/SoWiEee/LazyMeal/blob/main/API%20Docs.md))
+* [API Document](https://github.com/SoWiEee/LazyMeal/blob/main/API%20Docs.md)
 * [DeepWiki](https://deepwiki.com/SoWiEee/LazyMeal)
 
 # Requirements
