@@ -31,5 +31,5 @@ export const useNotification = () => {
         $q.notify(config)
     }
 
-  return { showNotification }
+    return { showNotification }
 };
