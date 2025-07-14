@@ -113,12 +113,12 @@ backend/
 ## UserRestaurant 模型 (口袋名單關聯表)
 * 記錄哪個使用者收藏了哪個餐廳，是 User 和 Restaurant 之間的關聯。
 
-```
-id: String (UUID), 主鍵
-userId: String, 關聯的使用者 ID
-restaurantId: String, 關聯的餐廳 ID
-addedAt: DateTime, 添加到口袋名單的時間
-user: User @relation, 與 User 模型的多對一關係
-restaurant: Restaurant @relation, 與 Restaurant 模型的多對一關係
-@@unique([userId, restaurantId]): 複合唯一索引，確保同一使用者不會重複收藏同一餐廳。
-```
+| 參數                             | 說明                                             |
+|----------------------------------|--------------------------------------------------|
+| id                               | 主鍵(UUID)                                       |
+| userId                           | 關聯的使用者 ID                                  |
+| restaurantId                     | 關聯的餐廳 ID                                    |
+| addedAt                          | 添加到口袋名單的時間                             |
+| user                             | 與 User 模型的多對一關係                         |
+| restaurant                       | 與 Restaurant 模型的多對一關係                   |
+| @@unique([userId, restaurantId]) | 複合唯一索引，確保同一使用者不會重複收藏同一餐廳 |
