@@ -2,7 +2,7 @@
   <q-page class="flex column items-center q-pa-md">
     <div class="q-mb-xl text-center">
       <q-btn
-        @click="selectRandomRestaurant"
+        @click="handleRandomSelection"
         color="primary"
         label="隨機選擇"
         size="lg"
@@ -10,14 +10,14 @@
         icon="mdi-shuffle-variant"
         :disable="activeWatchlist.length === 0"
       />
-      <div v-if="activeWatchlist.length === 0" class="text-caption text-grey q-mt-sm">
-        請先在口袋名單中啟用餐廳
+      <div v-if="hasWatchlistItems" class="text-caption text-grey q-mt-sm">
+        目前有 {{ activeWatchlist.length }} 間餐廳在您的口袋名單中
       </div>
     </div>
 
     <transition
       appear
-      enter-active-class="animated fadeIn"
+      :enter-active-class="`animated ${animation}`"
       leave-active-class="animated fadeOut"
     >
       <div v-if="selectedRestaurant" class="restaurant-card-container">
@@ -77,27 +77,31 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import { useWatchlistStore } from '@/stores/watchlist';
+import { useWatchlistStore } from '../stores/watchlistStore'
+import { useSelectionStore } from '../stores/selectionStore'
 import { useQuasar } from 'quasar';
+import { storeToRefs } from 'pinia';
 
 const $q = useQuasar();
 const watchlistStore = useWatchlistStore();
-const selectedRestaurant = ref(null);
+const selectionStore = useSelectionStore();
+const { selectedRestaurant } = storeToRefs(selectionStore);
 
-const activeWatchlist = computed(() => watchlistStore.watchlist.filter(r => r.toggled));
+const animation = ref('fadeIn');
+const animations = ['jackInTheBox', 'rollIn', 'fadeInUp', 'bounceIn', 'tada'];
+
+const activeWatchlist = computed(() => watchlistStore.watchlist);
 const hasWatchlistItems = computed(() => watchlistStore.watchlist.length > 0);
 
-const selectRandomRestaurant = () => {
-    selectedRestaurant.value = null;
+const handleRandomSelection = () => {
+    selectionStore.clearRestaurant();
 
     const candidates = activeWatchlist.value;
     if (candidates.length === 0) return;
 
-    const randomIndex = Math.floor(Math.random() * candidates.length);
-    const choice = candidates[randomIndex];
-
     setTimeout(() => {
-        selectedRestaurant.value = choice;
+        animation.value = animations[Math.floor(Math.random() * animations.length)];
+        selectionStore.selectNewRestaurant(candidates);
     }, 200);
 };
 </script>
