@@ -36,8 +36,8 @@ const getUserLocationAndSearch = () => {
 }
 
 onMounted(() => {
-	searchRestaurants()
-	// getUserLocationAndSearch()
+	// searchRestaurants()
+	getUserLocationAndSearch()
 })
 </script>
 
@@ -67,4 +67,3 @@ onMounted(() => {
         </div>
     </div>
 </template>
-
