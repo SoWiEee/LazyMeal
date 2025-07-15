@@ -33,11 +33,14 @@ export const useWatchlistStore = defineStore('watchlist', () => {
         try {
             const response = await axios.post(`${API_BASE_URL}`, restaurant);
 
-            if (response.data.fullRestaurant) {
-                // 把詳細餐廳物件推入 watchlist
-                watchlist.value.push(response.data.fullRestaurant);
-                return { success: true, message: `${restaurant.name} 已加入口袋名單！` };
-            }
+            // 檢查後端是否成功回傳儲存後的餐廳物件
+			const newWatchlistItem = response.data.fullRestaurant
+			if (newWatchlistItem) {
+				// 將前端已有的資訊 (如距離) 與後端回傳的資訊 (如 addedAt) 合併
+				const mergedItem = { ...restaurant, ...newWatchlistItem }
+				watchlist.value.push(mergedItem)
+				return { success: true, message: `${restaurant.name} 已加入口袋名單！` }
+			}
             
         } catch(err) {
             if (err.response && err.response.status === 409) {
