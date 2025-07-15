@@ -20,9 +20,9 @@ const handleRemoveFromWatchlist = async (placeId) => {
 			:key="item.googlePlaceId"
 		>
 			<q-card dark bordered class="bg-grey-9 watchlist-card">
-				<q-card-section>
+				<q-card-section class="flex-grow">
 					<div class="text-h6">{{ item.name }}</div>
-					<div class="text-subtitle2 text-grey-5 row items-center">
+					<div class="text-subtitle2 text-grey-4 row items-center">
 							<q-icon name="star" color="orange" class="q-mr-xs" />
 							{{ item.rating }}
 							<span v-if="item.user_ratings_total" class="q-ml-xs">
@@ -51,7 +51,7 @@ const handleRemoveFromWatchlist = async (placeId) => {
 				<q-separator dark />
 
 				<q-card-actions>
-						<div class="text-caption text-grey-6">
+						<div class="text-caption text-grey-7">
 								<q-icon name="event" class="q-mr-xs" />
 								加入於 {{ new Date(item.addedAt).toLocaleString() }}
 						</div>
