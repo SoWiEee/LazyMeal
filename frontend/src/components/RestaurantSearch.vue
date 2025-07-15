@@ -5,7 +5,7 @@ import { useNotification } from '../useNotification'
 const restaurantStore = useRestaurantStore()
 const { showNotification } = useNotification()
 
-const searchQuery = ref('麥當勞')
+const searchQuery = ref('')
 const userLat = ref(22.6865)	// 預設緯度
 const userLon = ref(120.3015)	// 預設經度
 
