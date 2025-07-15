@@ -18,7 +18,7 @@ const routes = [
     {
       path: '/watchlist',
       name: 'watchlist',
-      component: SelectView
+      component: WatchlistView
     }
 ];
 
