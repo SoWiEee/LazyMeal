@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import SelectView from '../views/SelectView.vue'
+import WatchlistView from '../views/WatchlistView.vue'
+
 
 const routes = [
     {
@@ -11,6 +13,11 @@ const routes = [
     {
       path: '/select',
       name: 'select',
+      component: SelectView
+    },
+    {
+      path: '/watchlist',
+      name: 'watchlist',
       component: SelectView
     }
 ];
