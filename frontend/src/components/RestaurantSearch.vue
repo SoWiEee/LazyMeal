@@ -46,13 +46,14 @@ onMounted(() => {
         <div class="col-12 col-sm-8">
             <q-input
                 outlined
+                dark
                 v-model="searchQuery"
                 label="輸入餐廳名稱，例如：麥當勞"
                 clearable
                 @keyup.enter="searchRestaurants"
             >
                 <template v-slot:append>
-                    <q-icon name="restaurant" />
+                    <q-icon color="grey-5" name="restaurant" />
                 </template>
             </q-input>
         </div>
