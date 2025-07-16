@@ -26,5 +26,10 @@ const tab = ref('')
 </template>
 
 <style scoped>
-
+.q-toolbar {
+  min-height: 50px; /* 增加 q-toolbar 高度 */
+}
+.q-tabs {
+  min-width: 300px; /* 增加 q-tabs 長度 */
+}
 </style>
