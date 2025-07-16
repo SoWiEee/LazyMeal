@@ -21,9 +21,9 @@
       leave-active-class="animated fadeOut"
     >
       <div v-if="selectedRestaurant" class="restaurant-card-container">
-        <q-card class="restaurant-card" flat bordered>
-          <q-card-section>
-            <div class="text-h6">{{ selectedRestaurant.name }}</div>
+        <q-card class="restaurant-card bg-grey-9 flex-grow" flat bordered>
+          <q-card-section class="flex-grow">
+            <div class="text-h6 text-grey-4">{{ selectedRestaurant.name }}</div>
             <div class="text-subtitle2 row items-center">
               <q-rating
                 :model-value="selectedRestaurant.rating"
@@ -31,10 +31,10 @@
                 size="sm"
                 color="orange"
                 readonly
-                class="q-mr-sm"
+                class="q-mr-sm "
               />
               {{ selectedRestaurant.rating }} 
-              <span v-if="selectedRestaurant.user_ratings_total" class="q-ml-xs text-grey">
+              <span v-if="selectedRestaurant.user_ratings_total" class="q-ml-xs text-grey-4">
                 ({{ selectedRestaurant.user_ratings_total }} 則評論)
               </span>
             </div>
