@@ -62,7 +62,7 @@ const handleRemoveFromWatchlist = async (restaurant) => {
           <q-card-section>
             <div class="text-caption text-grey-4 q-mt-sm">地址：{{ restaurant.address }}</div>
             <div class="text-caption text-grey-4">
-              評分：{{ restaurant.rating }} ({{ restaurant.user_ratings_total }} 則評價)
+              評分：{{ restaurant.rating }} ({{ restaurant.userRatingsTotal }} 則評價)
             </div>
             <div class="text-caption text-grey-4">
               價位：{{ restaurant.priceRange || '未提供' }} | 菜系：{{
@@ -80,7 +80,7 @@ const handleRemoveFromWatchlist = async (restaurant) => {
           </q-card-section>
 
           <q-card-actions align="right" class="q-pt-none">
-            <q-btn flat round icon="delete" color="grey-8" size="sm" @click="handleRemoveFromWatchlist(restaurant)" aria-label="從口袋名單移除" />
+            <q-btn flat round icon="delete" color="red-4" size="sm" @click="handleRemoveFromWatchlist(restaurant)" aria-label="從口袋名單移除" />
           </q-card-actions>
         </q-card>
       </div>
