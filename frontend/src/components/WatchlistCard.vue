@@ -25,8 +25,8 @@ const handleRemoveFromWatchlist = async (placeId) => {
 					<div class="text-subtitle2 text-grey-4 row items-center">
 							<q-icon name="star" color="orange" class="q-mr-xs" />
 							{{ item.rating }}
-							<span v-if="item.user_ratings_total" class="q-ml-xs">
-									({{ item.user_ratings_total }} 則評論)
+							<span v-if="item.userRatingsTotal" class="q-ml-xs">
+									({{ item.userRatingsTotal }} 則評論)
 							</span>
 					</div>
 				</q-card-section>
