@@ -16,7 +16,7 @@ export const getRestaurants = async (request, reply) => {
 };
 
 // get random restaurant
-export const getRandomRestaurant = async (request, reply) => {
+export const getRandomRest = async (request, reply) => {
     try {
         const params = parseQueryParams(request.query);
         const whereClause = buildWhereClause(params);
@@ -50,7 +50,7 @@ export const getRestaurant = async (request, reply) => {
 };
 
 // update restaurant
-export const updateRestaurant = async (request, reply) => { // avoid conflict with other update
+export const updateRest = async (request, reply) => { // avoid conflict with other update
     try {
         const { id } = request.params;
         const updatedRestaurant = await updateRestaurant(request.prisma, id, request.body);
@@ -66,7 +66,7 @@ export const updateRestaurant = async (request, reply) => { // avoid conflict wi
 };
 
 // delete restaurant
-export const deleteRestaurant = async (request, reply) => { // avoid conflict with other delete
+export const deleteRest = async (request, reply) => { // avoid conflict with other delete
     try {
         const { id } = request.params;
         await deleteRestaurant(request.prisma, id);

@@ -89,5 +89,4 @@ onMounted(() => {
 .watchlist-card {
 	border-radius: 8px;
 }
-
 </style>

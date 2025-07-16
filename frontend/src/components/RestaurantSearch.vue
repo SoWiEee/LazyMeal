@@ -5,7 +5,7 @@ import { useNotification } from '../useNotification'
 const restaurantStore = useRestaurantStore()
 const { showNotification } = useNotification()
 
-const searchQuery = ref('麥當勞')
+const searchQuery = ref('')
 const userLat = ref(22.6865)	// 預設緯度
 const userLon = ref(120.3015)	// 預設經度
 
@@ -36,8 +36,8 @@ const getUserLocationAndSearch = () => {
 }
 
 onMounted(() => {
-	searchRestaurants()
-	// getUserLocationAndSearch()
+	// searchRestaurants()
+	getUserLocationAndSearch()
 })
 </script>
 
@@ -46,13 +46,14 @@ onMounted(() => {
         <div class="col-12 col-sm-8">
             <q-input
                 outlined
+                dark
                 v-model="searchQuery"
                 label="輸入餐廳名稱，例如：麥當勞"
                 clearable
                 @keyup.enter="searchRestaurants"
             >
                 <template v-slot:append>
-                    <q-icon name="restaurant" />
+                    <q-icon color="grey-5" name="restaurant" />
                 </template>
             </q-input>
         </div>
@@ -67,4 +68,3 @@ onMounted(() => {
         </div>
     </div>
 </template>
-

@@ -28,13 +28,13 @@ const handleToggleWatchlist = async (restaurant) => {
                         <q-item-label lines="1" class="text-h6 text-weight-medium">
                             {{ restaurant.name }}
                         </q-item-label>
-                        <q-item-label caption lines="2">
+                        <q-item-label caption lines="2" class="text-grey-4">
                             地址：{{ restaurant.address }}
                         </q-item-label>
-                        <q-item-label caption>
-                            評分：{{ restaurant.rating }} ({{ restaurant.user_ratings_total }} 評價)
+                        <q-item-label caption class="text-grey-4">
+                            評分：{{ restaurant.rating }} ({{ restaurant.userRatingsTotal }} 評價)
                         </q-item-label>
-                        <q-item-label caption>
+                        <q-item-label caption class="text-grey-4">
                             距離：{{ restaurant.distance_meters.toFixed(2) }} 公尺
                         </q-item-label>
                     </q-item-section>
@@ -54,7 +54,7 @@ const handleToggleWatchlist = async (restaurant) => {
     </div>
 </template>
 
-<style setup>
+<style scoped>
 .q-item-custom-style {
 	padding-top: 10px;
 	padding-bottom: 10px;

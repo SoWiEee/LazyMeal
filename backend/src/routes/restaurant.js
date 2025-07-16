@@ -1,10 +1,10 @@
-import { getRestaurants, getRandom, getRestaurant, updateRest, deleteRest } from '../controllers/restaurantController.js';
+import { getRestaurants, getRandomRest, getRestaurant, updateRest, deleteRest } from '../controllers/restaurantController.js';
 
 async function restaurantRoutes(fastify, options) {
     // filterable
     fastify.get('/', getRestaurants);
 
-    fastify.get('/random', getRandom);
+    fastify.get('/random', getRandomRest);
 
     fastify.get('/:id', getRestaurant);
 
