@@ -32,7 +32,7 @@ const handleToggleWatchlist = async (restaurant) => {
                             地址：{{ restaurant.address }}
                         </q-item-label>
                         <q-item-label caption class="text-grey-4">
-                            評分：{{ restaurant.rating }} ({{ restaurant.user_ratings_total }} 評價)
+                            評分：{{ restaurant.rating }} ({{ restaurant.userRatingsTotal }} 評價)
                         </q-item-label>
                         <q-item-label caption class="text-grey-4">
                             距離：{{ restaurant.distance_meters.toFixed(2) }} 公尺
