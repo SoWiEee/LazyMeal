@@ -69,7 +69,7 @@ async def list_restaurants(session: AsyncSession, params: RestaurantQueryParams)
 
 async def get_random_restaurant(session: AsyncSession, params: RestaurantQueryParams) -> dict | None:
     where_clause, values = _build_filters(params)
-    count_query = text(f"SELECT COUNT(*) FROM restaurants {where_clause}")
+    count_query = text(f"SELECT COUNT(*) FROM restaurants {where_clause}")  # nosec B608
     count_result = await session.execute(count_query, values)
     count = count_result.scalar_one()
 
