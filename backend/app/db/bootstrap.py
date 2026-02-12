@@ -1,9 +1,13 @@
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncEngine
 
+from app.core.config import get_settings
+from app.core.security import hash_password
+
 
 async def ensure_watchlist_schema(engine: AsyncEngine) -> None:
     """Create tables required by watchlist flows in fresh environments."""
+    settings = get_settings()
     async with engine.begin() as connection:
         await connection.execute(
             text(
@@ -49,11 +53,19 @@ async def ensure_watchlist_schema(engine: AsyncEngine) -> None:
                 CREATE TABLE IF NOT EXISTS users (
                     id TEXT PRIMARY KEY,
                     username TEXT NOT NULL UNIQUE,
+                    role TEXT NOT NULL DEFAULT 'user',
+                    "passwordHash" TEXT,
                     "createdAt" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
                     "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT NOW()
                 )
                 """
             )
+        )
+        await connection.execute(
+            text("ALTER TABLE users ADD COLUMN IF NOT EXISTS role TEXT NOT NULL DEFAULT 'user'")
+        )
+        await connection.execute(
+            text('ALTER TABLE users ADD COLUMN IF NOT EXISTS "passwordHash" TEXT')
         )
         await connection.execute(
             text(
@@ -73,6 +85,22 @@ async def ensure_watchlist_schema(engine: AsyncEngine) -> None:
                 """
             )
         )
+
+        if settings.initial_admin_username and settings.initial_admin_password:
+            await connection.execute(
+                text(
+                    '''
+                    INSERT INTO users (id, username, role, "passwordHash", "createdAt", "updatedAt")
+                    VALUES (:id, :username, 'admin', :password_hash, NOW(), NOW())
+                    ON CONFLICT (username) DO NOTHING
+                    '''
+                ),
+                {
+                    "id": "admin-bootstrap",
+                    "username": settings.initial_admin_username,
+                    "password_hash": hash_password(settings.initial_admin_password),
+                },
+            )
         await connection.execute(
             text(
                 """

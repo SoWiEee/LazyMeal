@@ -40,6 +40,9 @@ Create `.env` in the project root:
 
 ```env
 Maps_API_KEY=YOUR_GOOGLE_PLACES_API_KEY
+JWT_SECRET_KEY=CHANGE_ME_TO_A_LONG_RANDOM_SECRET
+INITIAL_ADMIN_USERNAME=admin
+INITIAL_ADMIN_PASSWORD=CHANGE_ME_TO_A_STRONG_PASSWORD
 ```
 
 If `Maps_API_KEY` is not set, Google Places related features will not work.
@@ -124,6 +127,12 @@ CORS_ORIGIN=http://localhost:5173
 Maps_API_KEY=YOUR_GOOGLE_PLACES_API_KEY
 REDIS_URL=redis://localhost:6379/0
 CACHE_TTL_SECONDS=60
+JWT_SECRET_KEY=CHANGE_ME_TO_A_LONG_RANDOM_SECRET
+JWT_ALGORITHM=HS256
+JWT_ACCESS_TOKEN_EXPIRE_MINUTES=30
+JWT_REFRESH_TOKEN_EXPIRE_DAYS=7
+INITIAL_ADMIN_USERNAME=admin
+INITIAL_ADMIN_PASSWORD=CHANGE_ME_TO_A_STRONG_PASSWORD
 ```
 
 `DATABASE_URL` must use SQLAlchemy async driver format: `postgresql+asyncpg://...`
@@ -204,7 +213,25 @@ backend/
 - Main API reference: `docs/API Docs.md`
 - Interactive docs (when server is running): `http://localhost:3000/docs`
 
+## 🔐 Auth / RBAC
+
+- New JWT auth endpoints:
+  - `POST /api/auth/register`
+  - `POST /api/auth/login`
+  - `POST /api/auth/refresh`
+  - `GET /api/auth/me`
+- Watchlist endpoints now require Bearer token.
+- Restaurant update/delete endpoints are restricted to users with `admin` role.
+- Optional bootstrap admin account can be created at startup with `INITIAL_ADMIN_USERNAME` + `INITIAL_ADMIN_PASSWORD`.
+
+## 🌐 Nginx + Cloudflare Security Template
+
+- Production Nginx template: `deploy/nginx/lazymeal.conf`
+- Includes:
+  - Cloudflare real IP handling (`CF-Connecting-IP` + `set_real_ip_from` ranges)
+  - baseline security headers (HSTS/CSP/XFO/nosniff)
+  - API rate limiting (`limit_req`, `limit_conn`)
+
 ## 📝 Notes
 
-- Watchlist currently uses a fixed demo user (`1337`) to match legacy behavior.
 - PostGIS must be enabled for `ST_DWithin` geo filtering.

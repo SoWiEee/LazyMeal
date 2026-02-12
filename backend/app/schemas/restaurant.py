@@ -5,12 +5,12 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class RestaurantQueryParams(BaseModel):
-    search: str | None = None
+    search: str | None = Field(default=None, min_length=1, max_length=120)
     cuisine: list[str] = Field(default_factory=list)
     price_range: str | None = Field(default=None, alias="priceRange")
-    lat: float | None = None
-    lon: float | None = None
-    radius_km: float | None = Field(default=None, alias="radiusKm")
+    lat: float | None = Field(default=None, ge=-90, le=90)
+    lon: float | None = Field(default=None, ge=-180, le=180)
+    radius_km: float | None = Field(default=None, alias="radiusKm", gt=0, le=50)
 
 
 class RestaurantResponse(BaseModel):
