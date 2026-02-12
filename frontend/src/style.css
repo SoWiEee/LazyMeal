@@ -1,5 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap');
+
 :root {
-  font-family: 'SF Pro Text', 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  --superellipse-radius: 24px;
+  --superellipse-radius-lg: 30px;
+  font-family: 'Geist', 'Noto Sans TC', 'Source Han Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color: rgba(255, 255, 255, 0.92);
@@ -35,7 +39,7 @@ a {
 }
 
 .glass-panel {
-  border-radius: 30px;
+  border-radius: var(--superellipse-radius-lg);
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: linear-gradient(150deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.03));
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.1);
@@ -52,4 +56,28 @@ a {
   border-radius: 22px;
   border: 1px solid rgba(255, 255, 255, 0.09);
   backdrop-filter: blur(12px);
+}
+
+.q-btn:not(.q-btn--round) {
+  border-radius: var(--superellipse-radius);
+}
+
+.q-btn:not(.q-btn--round) .q-focus-helper,
+.q-btn:not(.q-btn--round)::before {
+  border-radius: inherit;
+}
+
+.q-field--outlined .q-field__control,
+.q-field--filled .q-field__control,
+.q-field--standout .q-field__control {
+  border-radius: var(--superellipse-radius);
+}
+
+.q-field__native,
+.q-field__input {
+  font-family: inherit;
+}
+
+.q-tab {
+  border-radius: var(--superellipse-radius);
 }

@@ -10,9 +10,7 @@ const tab = ref('')
       <q-toolbar class="toolbar-shell">
         <q-toolbar-title class="brand-title">Lazy Meal</q-toolbar-title>
 
-        <q-space />
-
-        <q-tabs v-model="tab" shrink class="app-tabs">
+        <q-tabs v-model="tab" shrink inline-label class="app-tabs">
           <q-route-tab to="/" name="home" label="新增餐廳" />
           <q-route-tab to="/select" name="select" label="隨機選擇" />
           <q-route-tab to="/watchlist" name="watchlist" label="口袋名單" />
@@ -37,7 +35,7 @@ const tab = ref('')
 }
 
 .toolbar-shell {
-  width: min(1180px, 100%);
+  width: min(1320px, 100%);
   margin: 8px auto;
   padding: 8px 18px;
   border-radius: 30px;
@@ -45,22 +43,32 @@ const tab = ref('')
   background: linear-gradient(135deg, rgba(30, 30, 34, 0.74), rgba(19, 19, 22, 0.68));
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(20px);
+  position: relative;
+  justify-content: center;
 }
 
 .brand-title {
   font-weight: 600;
   letter-spacing: 0.01em;
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: 240px;
 }
 
 .app-tabs {
+  width: min(760px, calc(100% - 80px));
   border-radius: 999px;
-  padding: 3px;
+  padding: 4px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  justify-content: center;
 }
 
 :deep(.q-tab) {
-  min-height: 38px;
+  min-height: 42px;
+  min-width: 160px;
   border-radius: 999px;
   font-weight: 500;
   opacity: 0.9;
@@ -74,7 +82,7 @@ const tab = ref('')
 }
 
 .page-shell {
-  width: min(1180px, calc(100% - 2rem));
+  width: min(1320px, calc(100% - 2rem));
   margin: 0 auto;
 }
 
@@ -82,6 +90,21 @@ const tab = ref('')
   .toolbar-shell {
     border-radius: 24px;
     padding: 8px 12px;
+  }
+
+  .brand-title {
+    position: static;
+    transform: none;
+    max-width: none;
+    margin-right: 8px;
+  }
+
+  .app-tabs {
+    width: 100%;
+  }
+
+  :deep(.q-tab) {
+    min-width: 96px;
   }
 
   .page-shell {
