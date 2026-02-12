@@ -4,7 +4,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.security import decode_token
+from app.core.security import TOKEN_TYPE_ACCESS, decode_token
 from app.db.session import get_db_session
 from app.repositories.user_repository import get_user_by_id
 
@@ -21,7 +21,7 @@ async def get_current_user(
     except Exception as exc:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token.") from exc
 
-    if payload.get("type") != "access":
+    if payload.get("type") != TOKEN_TYPE_ACCESS:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token type.")
 
     user_id = payload.get("sub")

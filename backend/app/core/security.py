@@ -8,6 +8,9 @@ import jwt
 
 from app.core.config import get_settings
 
+TOKEN_TYPE_ACCESS = "access_token"
+TOKEN_TYPE_REFRESH = "refresh_token"
+
 
 def hash_password(password: str) -> str:
     salt = secrets.token_bytes(16)
@@ -47,7 +50,7 @@ def create_access_token(subject: str, role: str) -> str:
     return _create_token(
         subject=subject,
         role=role,
-        token_type="access",
+        token_type=TOKEN_TYPE_ACCESS,
         expires_delta=timedelta(minutes=settings.jwt_access_token_expire_minutes),
     )
 
@@ -57,7 +60,7 @@ def create_refresh_token(subject: str, role: str) -> str:
     return _create_token(
         subject=subject,
         role=role,
-        token_type="refresh",
+        token_type=TOKEN_TYPE_REFRESH,
         expires_delta=timedelta(days=settings.jwt_refresh_token_expire_days),
     )
 

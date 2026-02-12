@@ -4,6 +4,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.security import (
+    TOKEN_TYPE_REFRESH,
     create_access_token,
     create_refresh_token,
     decode_token,
@@ -41,7 +42,7 @@ async def refresh(session: AsyncSession, refresh_token: str) -> dict:
     except Exception as exc:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token.") from exc
 
-    if payload.get("type") != "refresh":
+    if payload.get("type") != TOKEN_TYPE_REFRESH:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token type.")
 
     user_id = payload.get("sub")

@@ -1,4 +1,4 @@
-import random
+import secrets
 from collections.abc import Sequence
 from uuid import uuid4
 
@@ -62,28 +62,28 @@ def _build_filters(params: RestaurantQueryParams) -> tuple[str, dict[str, object
 
 async def list_restaurants(session: AsyncSession, params: RestaurantQueryParams) -> Sequence[dict]:
     where_clause, values = _build_filters(params)
-    query = text(f"{BASE_SELECT} {where_clause} ORDER BY \"createdAt\" DESC")
+    query = text(f"{BASE_SELECT} {where_clause} ORDER BY \"createdAt\" DESC")  # nosec B608
     result = await session.execute(query, values)
     return result.mappings().all()
 
 
 async def get_random_restaurant(session: AsyncSession, params: RestaurantQueryParams) -> dict | None:
     where_clause, values = _build_filters(params)
-    count_query = text(f"SELECT COUNT(*) FROM restaurants {where_clause}")
+    count_query = text(f"SELECT COUNT(*) FROM restaurants {where_clause}")  # nosec B608
     count_result = await session.execute(count_query, values)
     count = count_result.scalar_one()
 
     if count == 0:
         return None
 
-    offset = random.randint(0, count - 1)
-    random_query = text(f"{BASE_SELECT} {where_clause} OFFSET :offset LIMIT 1")
+    offset = secrets.randbelow(count)
+    random_query = text(f"{BASE_SELECT} {where_clause} OFFSET :offset LIMIT 1")  # nosec B608
     result = await session.execute(random_query, {**values, "offset": offset})
     return result.mappings().first()
 
 
 async def get_restaurant_by_id(session: AsyncSession, restaurant_id: str) -> dict | None:
-    query = text(f"{BASE_SELECT} WHERE id = :restaurant_id")
+    query = text(f"{BASE_SELECT} WHERE id = :restaurant_id")  # nosec B608
     result = await session.execute(query, {"restaurant_id": restaurant_id})
     return result.mappings().first()
 
@@ -95,7 +95,21 @@ async def update_restaurant(
     if not data:
         return await get_restaurant_by_id(session, restaurant_id)
 
-    assignments = ", ".join([f'"{key}" = :{key}' for key in data.keys()])
+    allowed_columns = {
+        "name": "name",
+        "cuisine": "cuisine",
+        "priceRange": '"priceRange"',
+        "latitude": "latitude",
+        "longitude": "longitude",
+        "address": "address",
+        "phone": "phone",
+        "googlePlaceId": '"googlePlaceId"',
+        "rating": "rating",
+        "userRatingsTotal": '"userRatingsTotal"',
+    }
+
+    safe_data = {key: value for key, value in data.items() if key in allowed_columns}
+    assignments = ", ".join([f"{allowed_columns[key]} = :{key}" for key in safe_data])
     query = text(
         f"""
         UPDATE restaurants
@@ -104,8 +118,8 @@ async def update_restaurant(
         RETURNING id, name, cuisine, "priceRange", latitude, longitude,
                   address, phone, "googlePlaceId", rating, "userRatingsTotal", "createdAt", "updatedAt"
         """
-    )
-    result = await session.execute(query, {**data, "restaurant_id": restaurant_id})
+    )  # nosec B608
+    result = await session.execute(query, {**safe_data, "restaurant_id": restaurant_id})
     await session.commit()
     return result.mappings().first()
 

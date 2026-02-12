@@ -9,7 +9,7 @@ class Settings(BaseSettings):
 
     app_name: str = "LazyMeal API"
     app_env: str = Field(default="development", alias="APP_ENV")
-    host: str = Field(default="0.0.0.0", alias="HOST")
+    host: str = Field(default="127.0.0.1", alias="HOST")
     port: int = Field(default=3000, alias="PORT")
     cors_origin: str = Field(default="http://localhost:5173", alias="CORS_ORIGIN")
 
