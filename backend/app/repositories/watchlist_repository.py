@@ -5,26 +5,6 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-async def ensure_default_user(session: AsyncSession, user_id: str = "1337") -> str:
-    select_query = text('SELECT id FROM users WHERE id = :user_id')
-    existing = await session.execute(select_query, {"user_id": user_id})
-    row = existing.first()
-
-    if row:
-        return user_id
-
-    create_query = text(
-        """
-        INSERT INTO users (id, username, "createdAt", "updatedAt")
-        VALUES (:user_id, :username, NOW(), NOW())
-        RETURNING id
-        """
-    )
-    result = await session.execute(create_query, {"user_id": user_id, "username": f"test_user_{user_id}"})
-    await session.commit()
-    return result.scalar_one()
-
-
 async def add_to_watchlist(session: AsyncSession, user_id: str, restaurant_id: str) -> None:
     query = text(
         """

@@ -16,11 +16,11 @@ class GoogleSearchResult(BaseModel):
 
 
 class WatchlistCreateRequest(BaseModel):
-    place_id: str
-    name: str
-    address: str
-    latitude: float
-    longitude: float
+    place_id: str = Field(min_length=5, max_length=255)
+    name: str = Field(min_length=1, max_length=255)
+    address: str = Field(min_length=1, max_length=500)
+    latitude: float = Field(ge=-90, le=90)
+    longitude: float = Field(ge=-180, le=180)
     rating: float | None = None
     user_ratings_total: int | None = None
 

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.auth import require_role
 from app.db.session import get_db_session
 from app.schemas.restaurant import (
     RestaurantQueryParams,
@@ -38,6 +39,7 @@ async def update_restaurant(
     restaurant_id: str,
     payload: RestaurantUpdateRequest,
     session: AsyncSession = Depends(get_db_session),
+    _: dict = Depends(require_role("admin")),
 ) -> dict:
     return await restaurant_service.update_restaurant(session, restaurant_id, payload)
 
@@ -46,6 +48,7 @@ async def update_restaurant(
 async def delete_restaurant(
     restaurant_id: str,
     session: AsyncSession = Depends(get_db_session),
+    _: dict = Depends(require_role("admin")),
 ) -> Response:
     await restaurant_service.delete_restaurant(session, restaurant_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)

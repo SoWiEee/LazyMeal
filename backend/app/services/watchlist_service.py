@@ -9,13 +9,11 @@ from app.core.config import get_settings
 from app.repositories.restaurant_repository import upsert_restaurant_from_place
 from app.repositories.watchlist_repository import (
     add_to_watchlist,
-    ensure_default_user,
     get_watchlist,
     remove_from_watchlist,
 )
 from app.services.google_places_service import search_google_restaurants
 
-DEFAULT_USER_ID = "1337"
 settings = get_settings()
 
 
@@ -25,8 +23,7 @@ async def search_google(query: str, lat: float, lon: float) -> list[dict]:
     return await search_google_restaurants(query=query, lat=lat, lon=lon)
 
 
-async def add_watchlist_item(session: AsyncSession, payload: dict) -> dict:
-    user_id = await ensure_default_user(session, DEFAULT_USER_ID)
+async def add_watchlist_item(session: AsyncSession, payload: dict, user_id: str) -> dict:
     restaurant = await upsert_restaurant_from_place(
         session,
         {
@@ -62,8 +59,7 @@ async def add_watchlist_item(session: AsyncSession, payload: dict) -> dict:
     }
 
 
-async def list_watchlist(session: AsyncSession) -> list[dict]:
-    user_id = await ensure_default_user(session, DEFAULT_USER_ID)
+async def list_watchlist(session: AsyncSession, user_id: str) -> list[dict]:
     cache_key = build_cache_key("watchlist:list", {"user_id": user_id})
     redis = get_redis_client()
 
@@ -87,8 +83,7 @@ async def list_watchlist(session: AsyncSession) -> list[dict]:
     return data
 
 
-async def delete_watchlist_item(session: AsyncSession, google_place_id: str) -> None:
-    user_id = await ensure_default_user(session, DEFAULT_USER_ID)
+async def delete_watchlist_item(session: AsyncSession, google_place_id: str, user_id: str) -> None:
     deleted = await remove_from_watchlist(session, user_id, google_place_id)
     if not deleted:
         raise HTTPException(status_code=404, detail="Restaurant not found in your watchlist.")

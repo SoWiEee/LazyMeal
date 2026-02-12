@@ -1,4 +1,4 @@
-import random
+import secrets
 from collections.abc import Sequence
 from uuid import uuid4
 
@@ -69,14 +69,14 @@ async def list_restaurants(session: AsyncSession, params: RestaurantQueryParams)
 
 async def get_random_restaurant(session: AsyncSession, params: RestaurantQueryParams) -> dict | None:
     where_clause, values = _build_filters(params)
-    count_query = text(f"SELECT COUNT(*) FROM restaurants {where_clause}")
+    count_query = text(f"SELECT COUNT(*) FROM restaurants {where_clause}")  # nosec B608
     count_result = await session.execute(count_query, values)
     count = count_result.scalar_one()
 
     if count == 0:
         return None
 
-    offset = random.randint(0, count - 1)
+    offset = secrets.randbelow(count)
     random_query = text(f"{BASE_SELECT} {where_clause} OFFSET :offset LIMIT 1")
     result = await session.execute(random_query, {**values, "offset": offset})
     return result.mappings().first()
@@ -95,17 +95,40 @@ async def update_restaurant(
     if not data:
         return await get_restaurant_by_id(session, restaurant_id)
 
-    assignments = ", ".join([f'"{key}" = :{key}' for key in data.keys()])
     query = text(
-        f"""
+        """
         UPDATE restaurants
-        SET {assignments}, "updatedAt" = NOW()
+        SET
+            name = COALESCE(:name, name),
+            cuisine = COALESCE(:cuisine, cuisine),
+            "priceRange" = COALESCE(:priceRange, "priceRange"),
+            latitude = COALESCE(:latitude, latitude),
+            longitude = COALESCE(:longitude, longitude),
+            address = COALESCE(:address, address),
+            phone = COALESCE(:phone, phone),
+            "googlePlaceId" = COALESCE(:googlePlaceId, "googlePlaceId"),
+            rating = COALESCE(:rating, rating),
+            "userRatingsTotal" = COALESCE(:userRatingsTotal, "userRatingsTotal"),
+            "updatedAt" = NOW()
         WHERE id = :restaurant_id
         RETURNING id, name, cuisine, "priceRange", latitude, longitude,
                   address, phone, "googlePlaceId", rating, "userRatingsTotal", "createdAt", "updatedAt"
         """
     )
-    result = await session.execute(query, {**data, "restaurant_id": restaurant_id})
+    bind_values = {
+        "restaurant_id": restaurant_id,
+        "name": data.get("name"),
+        "cuisine": data.get("cuisine"),
+        "priceRange": data.get("priceRange"),
+        "latitude": data.get("latitude"),
+        "longitude": data.get("longitude"),
+        "address": data.get("address"),
+        "phone": data.get("phone"),
+        "googlePlaceId": data.get("googlePlaceId"),
+        "rating": data.get("rating"),
+        "userRatingsTotal": data.get("userRatingsTotal"),
+    }
+    result = await session.execute(query, bind_values)
     await session.commit()
     return result.mappings().first()
 
