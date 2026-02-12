@@ -62,14 +62,14 @@ def _build_filters(params: RestaurantQueryParams) -> tuple[str, dict[str, object
 
 async def list_restaurants(session: AsyncSession, params: RestaurantQueryParams) -> Sequence[dict]:
     where_clause, values = _build_filters(params)
-    query = text(f"{BASE_SELECT} {where_clause} ORDER BY \"createdAt\" DESC")  # nosec B608
+    query = text(f"{BASE_SELECT} {where_clause} ORDER BY \"createdAt\" DESC")
     result = await session.execute(query, values)
     return result.mappings().all()
 
 
 async def get_random_restaurant(session: AsyncSession, params: RestaurantQueryParams) -> dict | None:
     where_clause, values = _build_filters(params)
-    count_query = text(f"SELECT COUNT(*) FROM restaurants {where_clause}")  # nosec B608
+    count_query = text(f"SELECT COUNT(*) FROM restaurants {where_clause}")
     count_result = await session.execute(count_query, values)
     count = count_result.scalar_one()
 
@@ -77,13 +77,13 @@ async def get_random_restaurant(session: AsyncSession, params: RestaurantQueryPa
         return None
 
     offset = secrets.randbelow(count)
-    random_query = text(f"{BASE_SELECT} {where_clause} OFFSET :offset LIMIT 1")  # nosec B608
+    random_query = text(f"{BASE_SELECT} {where_clause} OFFSET :offset LIMIT 1")
     result = await session.execute(random_query, {**values, "offset": offset})
     return result.mappings().first()
 
 
 async def get_restaurant_by_id(session: AsyncSession, restaurant_id: str) -> dict | None:
-    query = text(f"{BASE_SELECT} WHERE id = :restaurant_id")  # nosec B608
+    query = text(f"{BASE_SELECT} WHERE id = :restaurant_id")
     result = await session.execute(query, {"restaurant_id": restaurant_id})
     return result.mappings().first()
 
@@ -95,31 +95,40 @@ async def update_restaurant(
     if not data:
         return await get_restaurant_by_id(session, restaurant_id)
 
-    allowed_columns = {
-        "name": "name",
-        "cuisine": "cuisine",
-        "priceRange": '"priceRange"',
-        "latitude": "latitude",
-        "longitude": "longitude",
-        "address": "address",
-        "phone": "phone",
-        "googlePlaceId": '"googlePlaceId"',
-        "rating": "rating",
-        "userRatingsTotal": '"userRatingsTotal"',
-    }
-
-    safe_data = {key: value for key, value in data.items() if key in allowed_columns}
-    assignments = ", ".join([f"{allowed_columns[key]} = :{key}" for key in safe_data])
     query = text(
-        f"""
+        """
         UPDATE restaurants
-        SET {assignments}, "updatedAt" = NOW()
+        SET
+            name = COALESCE(:name, name),
+            cuisine = COALESCE(:cuisine, cuisine),
+            "priceRange" = COALESCE(:priceRange, "priceRange"),
+            latitude = COALESCE(:latitude, latitude),
+            longitude = COALESCE(:longitude, longitude),
+            address = COALESCE(:address, address),
+            phone = COALESCE(:phone, phone),
+            "googlePlaceId" = COALESCE(:googlePlaceId, "googlePlaceId"),
+            rating = COALESCE(:rating, rating),
+            "userRatingsTotal" = COALESCE(:userRatingsTotal, "userRatingsTotal"),
+            "updatedAt" = NOW()
         WHERE id = :restaurant_id
         RETURNING id, name, cuisine, "priceRange", latitude, longitude,
                   address, phone, "googlePlaceId", rating, "userRatingsTotal", "createdAt", "updatedAt"
         """
-    )  # nosec B608
-    result = await session.execute(query, {**safe_data, "restaurant_id": restaurant_id})
+    )
+    bind_values = {
+        "restaurant_id": restaurant_id,
+        "name": data.get("name"),
+        "cuisine": data.get("cuisine"),
+        "priceRange": data.get("priceRange"),
+        "latitude": data.get("latitude"),
+        "longitude": data.get("longitude"),
+        "address": data.get("address"),
+        "phone": data.get("phone"),
+        "googlePlaceId": data.get("googlePlaceId"),
+        "rating": data.get("rating"),
+        "userRatingsTotal": data.get("userRatingsTotal"),
+    }
+    result = await session.execute(query, bind_values)
     await session.commit()
     return result.mappings().first()
 

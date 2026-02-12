@@ -8,8 +8,8 @@ import jwt
 
 from app.core.config import get_settings
 
-TOKEN_TYPE_ACCESS = "access_token"
-TOKEN_TYPE_REFRESH = "refresh_token"
+TOKEN_TYPE_ACCESS = "access"
+TOKEN_TYPE_REFRESH = "refresh"
 
 
 def hash_password(password: str) -> str:
