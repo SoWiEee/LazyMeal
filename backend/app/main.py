@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.api.router import api_router
+from app.core.cache import get_redis_client
 from app.core.config import get_settings
 from app.db.session import engine
 
@@ -14,6 +15,9 @@ settings = get_settings()
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     yield
+    redis = get_redis_client()
+    if redis:
+        await redis.aclose()
     await engine.dispose()
 
 

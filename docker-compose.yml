@@ -1,0 +1,58 @@
+services:
+  db:
+    image: postgis/postgis:17-3.5
+    container_name: lazymeal-db
+    environment:
+      POSTGRES_DB: lazymeal
+      POSTGRES_USER: lazymeal
+      POSTGRES_PASSWORD: lazymeal
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lazymeal -d lazymeal"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: lazymeal-redis
+    ports:
+      - "6379:6379"
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: lazymeal-backend
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    environment:
+      APP_ENV: development
+      HOST: 0.0.0.0
+      PORT: 3000
+      DATABASE_URL: postgresql+asyncpg://lazymeal:lazymeal@db:5432/lazymeal
+      CORS_ORIGIN: http://localhost:5173
+      Maps_API_KEY: ${Maps_API_KEY:-}
+      REDIS_URL: redis://redis:6379/0
+      CACHE_TTL_SECONDS: ${CACHE_TTL_SECONDS:-60}
+    ports:
+      - "3000:3000"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: lazymeal-frontend
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+
+volumes:
+  postgres_data:

@@ -28,6 +28,8 @@ model Restaurant {
 
 	userBookmarks UserRestaurant[] // 關聯到使用者收藏
 
+  @@index([priceRange])
+  @@index([createdAt(sort: Desc)])
   @@map("restaurants")
 }
 
@@ -56,5 +58,7 @@ model UserRestaurant {
 	restaurant     Restaurant @relation(fields: [restaurantId], references: [id])
 
 	@@unique([userId, restaurantId]) // 確保一個用戶不能重複收藏同一家餐廳
+	@@index([userId, addedAt(sort: Desc)])
+	@@index([restaurantId])
 	@@map("user_restaurants")
 }

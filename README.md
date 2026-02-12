@@ -27,6 +27,60 @@ LazyMeal 是一個幫助使用者快速決定午餐/晚餐的 Web 應用程式�
 - PostgreSQL `v17+`
 - 建議安裝 PostGIS extension（支援距離查詢）
 
+## 使用 Docker Compose 啟動（建議）
+
+### 1) 準備環境變數
+可在專案根目錄建立 `.env`（供 `docker compose` 讀取）：
+
+```env
+Maps_API_KEY=YOUR_GOOGLE_PLACES_API_KEY
+```
+
+> 若未設定 `Maps_API_KEY`，與 Google Places 相關的功能將無法正常使用。
+
+### 2) 啟動所有服務
+在專案根目錄執行（backend 容器內使用 uv 啟動）：
+
+```bash
+docker compose up --build
+```
+
+啟動後可使用：
+- Frontend: `http://localhost:5173`
+- Backend API: `http://localhost:3000`
+- Swagger: `http://localhost:3000/docs`
+- PostgreSQL: `localhost:5432`（帳號/密碼/DB 預設皆為 `lazymeal`）
+
+### 3) 背景執行與關閉
+```bash
+# 背景執行
+docker compose up -d --build
+
+# 停止與移除容器
+docker compose down
+
+# 同時移除資料庫 volume（清空資料）
+docker compose down -v
+```
+
+### 4) 效能優化（資料庫 + 快取）
+
+本專案已加入以下效能優化：
+- PostgreSQL 索引：
+  - `name` 的 trigram GIN index（加速 `ILIKE` 搜尋）
+  - `cuisine` 的 GIN index（加速陣列條件）
+  - 地理查詢的 GiST geography index（加速 `ST_DWithin`）
+  - `priceRange`、`createdAt`、`user_restaurants(userId, addedAt)` 等常用條件索引
+- Redis 快取：
+  - 餐廳列表查詢快取（`restaurants:list`）
+  - watchlist 查詢快取（`watchlist:list`）
+  - 當新增/刪除 watchlist 或更新餐廳時會自動失效對應快取
+
+可透過 `.env` 覆蓋快取設定：
+```env
+CACHE_TTL_SECONDS=60
+```
+
 ## 快速啟動
 
 ### 1) 下載專案並安裝前端依賴
@@ -36,12 +90,16 @@ cd LazyMeal
 yarn install
 ```
 
-### 2) 安裝後端依賴
-建議使用虛擬環境：
+### 2) 安裝後端依賴（使用 uv）
+請先安裝 [uv](https://docs.astral.sh/uv/)：
 ```bash
-python3.14 -m venv .venv
-source .venv/bin/activate
-pip install -e ./backend
+# macOS / Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+在專案根目錄執行：
+```bash
+uv sync --project backend
 ```
 
 ### 3) 設定環境變數
@@ -53,6 +111,8 @@ HOST=0.0.0.0
 DATABASE_URL=postgresql+asyncpg://[USERNAME]:[PASSWORD]@[HOSTNAME]:[PORT]/[DB_NAME]
 CORS_ORIGIN=http://localhost:5173
 Maps_API_KEY=YOUR_GOOGLE_PLACES_API_KEY
+REDIS_URL=redis://localhost:6379/0
+CACHE_TTL_SECONDS=60
 ```
 
 > `DATABASE_URL` 需要使用 SQLAlchemy async driver 格式：`postgresql+asyncpg://...`
@@ -72,7 +132,7 @@ npx prisma migrate dev --name init_database
 # 同時啟動前後端
 yarn dev
 
-# 僅啟動後端
+# 僅啟動後端（uv）
 yarn backend:dev
 
 # 僅啟動前端
