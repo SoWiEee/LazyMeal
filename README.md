@@ -39,7 +39,7 @@ Maps_API_KEY=YOUR_GOOGLE_PLACES_API_KEY
 > 若未設定 `Maps_API_KEY`，與 Google Places 相關的功能將無法正常使用。
 
 ### 2) 啟動所有服務
-在專案根目錄執行：
+在專案根目錄執行（backend 容器內使用 uv 啟動）：
 
 ```bash
 docker compose up --build
@@ -90,12 +90,16 @@ cd LazyMeal
 yarn install
 ```
 
-### 2) 安裝後端依賴
-建議使用虛擬環境：
+### 2) 安裝後端依賴（使用 uv）
+請先安裝 [uv](https://docs.astral.sh/uv/)：
 ```bash
-python3.14 -m venv .venv
-source .venv/bin/activate
-pip install -e ./backend
+# macOS / Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+在專案根目錄執行：
+```bash
+uv sync --project backend
 ```
 
 ### 3) 設定環境變數
@@ -107,6 +111,8 @@ HOST=0.0.0.0
 DATABASE_URL=postgresql+asyncpg://[USERNAME]:[PASSWORD]@[HOSTNAME]:[PORT]/[DB_NAME]
 CORS_ORIGIN=http://localhost:5173
 Maps_API_KEY=YOUR_GOOGLE_PLACES_API_KEY
+REDIS_URL=redis://localhost:6379/0
+CACHE_TTL_SECONDS=60
 ```
 
 > `DATABASE_URL` 需要使用 SQLAlchemy async driver 格式：`postgresql+asyncpg://...`
@@ -126,7 +132,7 @@ npx prisma migrate dev --name init_database
 # 同時啟動前後端
 yarn dev
 
-# 僅啟動後端
+# 僅啟動後端（uv）
 yarn backend:dev
 
 # 僅啟動前端

@@ -1,15 +1,15 @@
-FROM python:3.13-slim
+FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    UV_PYTHON=3.14
 
 WORKDIR /app/backend
 
 COPY backend/ ./
 
-RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir -e .
+RUN uv sync --no-dev
 
 EXPOSE 3000
 
-CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "3000"]
+CMD ["uv", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "3000"]

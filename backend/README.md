@@ -2,8 +2,16 @@
 
 FastAPI backend for LazyMeal.
 
-Run locally:
+## Local development (uv)
+
+Install dependencies:
 
 ```bash
-python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 3000 --app-dir backend
+uv sync --project backend
+```
+
+Run API:
+
+```bash
+uv run --directory backend uvicorn app.main:app --reload --host 0.0.0.0 --port 3000
 ```
