@@ -7,6 +7,7 @@ from fastapi.responses import JSONResponse
 from app.api.router import api_router
 from app.core.cache import get_redis_client
 from app.core.config import get_settings
+from app.db.bootstrap import ensure_watchlist_schema
 from app.db.session import engine
 
 settings = get_settings()
@@ -14,6 +15,7 @@ settings = get_settings()
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    await ensure_watchlist_schema(engine)
     yield
     redis = get_redis_client()
     if redis:
