@@ -28,7 +28,7 @@ LazyMeal is a full-stack web app that helps you quickly decide what to eat for l
 
 ## ✅ Prerequisites
 
-- Node.js `v22+`
+- Bun `v1.2+`
 - Python `3.14`
 - PostgreSQL `v17+`
 - PostGIS extension (required for geo-distance queries)
@@ -96,7 +96,7 @@ CACHE_TTL_SECONDS=60
 ```bash
 git clone https://github.com/SoWiEee/LazyMeal.git
 cd LazyMeal
-yarn install
+bun install
 ```
 
 ### 2) Install backend dependencies (with uv)
@@ -141,13 +141,13 @@ From project root:
 
 ```bash
 # Start frontend + backend
-yarn dev
+bun run dev
 
 # Start backend only (uv)
-yarn backend:dev
+bun run backend:dev
 
 # Start frontend only
-yarn frontend:dev
+bun run frontend:dev
 ```
 
 ## 🗂️ Project Structure
