@@ -1,6 +1,7 @@
 import os
 
 os.environ.setdefault("JWT_SECRET_KEY", "test-secret-key")
+os.environ.setdefault("DATABASE_URL", "postgresql+asyncpg://test:test@localhost:5432/test")
 
 from app.core.security import (
     create_access_token,
