@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "lazymeal-backend"
 version = "1.0.0"
@@ -21,6 +25,11 @@ dev = [
   "pytest-asyncio>=0.24.0",
   "ruff>=0.6.0"
 ]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
+exclude = ["prisma*", "tests*"]
 
 [tool.ruff]
 line-length = 100
