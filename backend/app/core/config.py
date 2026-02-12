@@ -15,6 +15,8 @@ class Settings(BaseSettings):
 
     database_url: str = Field(alias="DATABASE_URL")
     maps_api_key: str | None = Field(default=None, alias="Maps_API_KEY")
+    redis_url: str | None = Field(default=None, alias="REDIS_URL")
+    cache_ttl_seconds: int = Field(default=60, alias="CACHE_TTL_SECONDS")
 
 
 @lru_cache

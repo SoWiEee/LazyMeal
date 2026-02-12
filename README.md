@@ -63,6 +63,24 @@ docker compose down
 docker compose down -v
 ```
 
+### 4) 效能優化（資料庫 + 快取）
+
+本專案已加入以下效能優化：
+- PostgreSQL 索引：
+  - `name` 的 trigram GIN index（加速 `ILIKE` 搜尋）
+  - `cuisine` 的 GIN index（加速陣列條件）
+  - 地理查詢的 GiST geography index（加速 `ST_DWithin`）
+  - `priceRange`、`createdAt`、`user_restaurants(userId, addedAt)` 等常用條件索引
+- Redis 快取：
+  - 餐廳列表查詢快取（`restaurants:list`）
+  - watchlist 查詢快取（`watchlist:list`）
+  - 當新增/刪除 watchlist 或更新餐廳時會自動失效對應快取
+
+可透過 `.env` 覆蓋快取設定：
+```env
+CACHE_TTL_SECONDS=60
+```
+
 ## 快速啟動
 
 ### 1) 下載專案並安裝前端依賴
