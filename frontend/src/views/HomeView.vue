@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted } from 'vue'
 import { useRestaurantStore } from '../stores/restaurantStore'
 import { useWatchlistStore } from '../stores/watchlistStore'
 import WatchlistCard from '../components/WatchlistCard.vue'
@@ -10,83 +10,81 @@ const watchlistStore = useWatchlistStore()
 const restaurantStore = useRestaurantStore()
 
 onMounted(() => {
-	watchlistStore.fetchWatchlist()
+  watchlistStore.fetchWatchlist()
 })
 </script>
 
 <template>
-	<q-page class="q-pa-md">
-	<h1 class="text-h4 q-mb-md">附近餐廳</h1>
-	<div class="row q-col-gutter-md">
+  <q-page class="home-page q-py-lg">
+    <div class="page-header q-mb-lg">
+      <h1 class="section-title text-h4">附近餐廳</h1>
+      <p class="text-grey-5 q-mt-xs q-mb-none">探索附近餐廳、快速收藏，並維持舒適穩定的瀏覽節奏。</p>
+    </div>
 
-		<!-- section AA -->
-		<div class="col-12 col-md-5">
+    <div class="row q-col-gutter-lg items-start">
+      <div class="col-12 col-lg-5">
+        <section class="glass-panel panel-wrap q-pa-lg">
+          <RestaurantSearch />
 
-			<!-- section A -->
-			<RestaurantSearch />
+          <div class="status-area q-mt-md">
+            <q-banner v-if="restaurantStore.isLoading" rounded class="status-banner bg-blue-1 text-blue-10 q-mb-md">
+              <q-spinner-dots size="2em" /> 載入中...
+            </q-banner>
+            <q-banner v-else-if="restaurantStore.error" rounded class="status-banner bg-red-1 text-red-10 q-mb-md">
+              <q-icon name="error" color="red" /> 錯誤: {{ restaurantStore.error }}
+            </q-banner>
+            <q-banner v-else-if="restaurantStore.restaurants.length === 0" rounded class="status-banner bg-orange-1 text-orange-10 q-mb-md">
+              <q-icon name="warning" color="orange" /> 沒有找到餐廳。
+            </q-banner>
+          </div>
 
-			<!-- section B -->
-			<div class="row">
-				<div class="col-12">
-					<q-banner v-if="restaurantStore.isLoading" rounded class="bg-blue-1 text-blue-8 q-mb-md">
-						<q-spinner-dots size="2em" /> Loading...
-					</q-banner>
-					<q-banner v-else-if="restaurantStore.error" rounded class="bg-red-1 text-red-8 q-mb-md">
-						<q-icon name="error" color="red" /> 錯誤: {{ restaurantStore.error }}
-					</q-banner>
-					<q-banner v-else-if="restaurantStore.restaurants.length === 0" rounded class="bg-orange-1 text-orange-8 q-mb-md">
-						<q-icon name="warning" color="orange" /> 沒有找到餐廳。
-					</q-banner>
-				</div>
-			</div>
+          <RestaurantList />
+        </section>
+      </div>
 
-			<!-- section C -->
-			<RestaurantList/>
-		</div>
+      <div class="col-12 col-lg-7">
+        <section class="glass-panel panel-wrap q-pa-lg">
+          <div class="row items-center q-mb-md no-wrap">
+            <h2 class="section-title text-h5">我的口袋名單</h2>
+          </div>
 
-		<!-- section BB -->
-			
-		<div class="col-12 col-md-7">
-			<div class="row items-center q-mb-md no-wrap">
-				<h2 class="text-h5 q-mr-md q-my-none">我的口袋名單</h2>
-			</div>
-			
-			<q-banner v-if="watchlistStore.isLoading" rounded class="bg-blue-1 text-blue-8 q-mb-md">
-				<q-spinner-dots size="2em" /> 口袋名單載入中...
-			</q-banner>
-			<q-banner v-else-if="watchlistStore.error" rounded class="bg-red-1 text-red-8 q-mb-md">
-				<q-icon name="error" color="red" /> 錯誤：{{ watchlistStore.error }}
-			</q-banner>
-			<q-banner v-else-if="watchlistStore.watchlist.length === 0" rounded class="bg-blue-1 text-blue-8 q-mb-md">
-				<q-icon name="info" color="blue" /> 口袋名單是空的，點擊愛心加入吧！
-			</q-banner>
+          <q-banner v-if="watchlistStore.isLoading" rounded class="status-banner bg-blue-1 text-blue-10 q-mb-md">
+            <q-spinner-dots size="2em" /> 口袋名單載入中...
+          </q-banner>
+          <q-banner v-else-if="watchlistStore.error" rounded class="status-banner bg-red-1 text-red-10 q-mb-md">
+            <q-icon name="error" color="red" /> 錯誤：{{ watchlistStore.error }}
+          </q-banner>
+          <q-banner v-else-if="watchlistStore.watchlist.length === 0" rounded class="status-banner bg-blue-1 text-blue-10 q-mb-md">
+            <q-icon name="info" color="blue" /> 口袋名單是空的，點擊愛心加入吧！
+          </q-banner>
 
-			<!-- watchlist card component -->
-			<WatchlistCard/>
-		</div>
-	</div>
-	</q-page>
+          <WatchlistCard />
+        </section>
+      </div>
+    </div>
+  </q-page>
 </template>
 
 <style scoped>
-
-.q-list-custom-style {
-	border-radius: 8px;
-	overflow: hidden; /* 確保內容在圓角內 */
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 8px 16px rgba(0, 0, 0, 0.1);
+.home-page {
+  padding-inline: 6px;
 }
 
-/* 可以為每個列表項添加一些內邊距或高度調整 */
-.q-item-custom-style {
-	padding-top: 10px;
-	padding-bottom: 10px;
+.page-header {
+  max-width: 720px;
 }
 
-.q-list-custom-style .q-item-label {
-	color: #E0E0E0;
+.panel-wrap {
+  min-height: 540px;
 }
 
-.watchlist-card {
-	border-radius: 8px;
+.status-area {
+  min-height: 80px;
+}
+
+@media (max-width: 1023px) {
+  .panel-wrap {
+    min-height: auto;
+  }
 }
 </style>

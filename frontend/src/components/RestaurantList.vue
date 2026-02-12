@@ -7,56 +7,60 @@ const { showNotification } = useNotification()
 const watchlistStore = useWatchlistStore()
 const restaurantStore = useRestaurantStore()
 
-// 處理愛心按鈕點擊事件
 const handleToggleWatchlist = async (restaurant) => {
-	const result = await watchlistStore.toggleWatchlist(restaurant)
-	showNotification(result)
+  const result = await watchlistStore.toggleWatchlist(restaurant)
+  showNotification(result)
 }
 </script>
 
 <template>
-    <div class="row q-mt-md">
-        <div class="col-12">
-            <q-list bordered separator class="q-list-custom-style">
-                <q-item
-                    v-for="restaurant in restaurantStore.restaurants"
-                    :key="restaurant.place_id"
-                    clickable v-ripple
-                    class="q-item-custom-style"
-                >
-                    <q-item-section>
-                        <q-item-label lines="1" class="text-h6 text-weight-medium">
-                            {{ restaurant.name }}
-                        </q-item-label>
-                        <q-item-label caption lines="2" class="text-grey-4">
-                            地址：{{ restaurant.address }}
-                        </q-item-label>
-                        <q-item-label caption class="text-grey-4">
-                            評分：{{ restaurant.rating }} ({{ restaurant.userRatingsTotal }} 評價)
-                        </q-item-label>
-                        <q-item-label caption class="text-grey-4">
-                            距離：{{ restaurant.distance_meters.toFixed(2) }} 公尺
-                        </q-item-label>
-                    </q-item-section>
-                    <q-item-section side top>
-                        <q-btn
-                            flat
-                            round
-                            :icon="watchlistStore.isRestaurantInWatchlist(restaurant.place_id) ? 'favorite' : 'favorite_border'"
-                            :color="watchlistStore.isRestaurantInWatchlist(restaurant.place_id) ? 'red' : 'grey'"
-                            size="sm"
-                            @click.stop="handleToggleWatchlist(restaurant)"
-                        />
-                    </q-item-section>
-                </q-item>
-            </q-list>
-        </div>
+  <div class="row q-mt-md">
+    <div class="col-12">
+      <q-list bordered separator class="restaurant-list">
+        <q-item
+          v-for="restaurant in restaurantStore.restaurants"
+          :key="restaurant.place_id"
+          clickable
+          v-ripple
+          class="restaurant-item"
+        >
+          <q-item-section>
+            <q-item-label lines="1" class="text-h6 text-weight-medium">{{ restaurant.name }}</q-item-label>
+            <q-item-label caption lines="2" class="text-grey-4">地址：{{ restaurant.address }}</q-item-label>
+            <q-item-label caption class="text-grey-4">評分：{{ restaurant.rating }} ({{ restaurant.userRatingsTotal }} 評價)</q-item-label>
+            <q-item-label caption class="text-grey-4">距離：{{ restaurant.distance_meters.toFixed(2) }} 公尺</q-item-label>
+          </q-item-section>
+          <q-item-section side top>
+            <q-btn
+              flat
+              round
+              :icon="watchlistStore.isRestaurantInWatchlist(restaurant.place_id) ? 'favorite' : 'favorite_border'"
+              :color="watchlistStore.isRestaurantInWatchlist(restaurant.place_id) ? 'red' : 'grey'"
+              size="sm"
+              @click.stop="handleToggleWatchlist(restaurant)"
+            />
+          </q-item-section>
+        </q-item>
+      </q-list>
     </div>
+  </div>
 </template>
 
 <style scoped>
-.q-item-custom-style {
-	padding-top: 10px;
-	padding-bottom: 10px;
+.restaurant-list {
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+  overflow: hidden;
+}
+
+.restaurant-item {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  transition: background-color 0.2s ease;
+}
+
+.restaurant-item:hover {
+  background: rgba(255, 255, 255, 0.04);
 }
 </style>
