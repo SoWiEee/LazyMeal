@@ -76,12 +76,12 @@ onMounted(() => {
 }
 
 .search-input :deep(.q-field__control) {
-  border-radius: 999px;
+  border-radius: var(--superellipse-radius);
   background: rgba(255, 255, 255, 0.05);
 }
 
 .search-btn {
-  border-radius: 999px;
+  border-radius: var(--superellipse-radius);
   min-width: 100px;
 }
 </style>
