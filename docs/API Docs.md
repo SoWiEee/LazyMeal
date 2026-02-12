@@ -1,480 +1,285 @@
-# API Docs
+# 📚 LazyMeal API Documentation
 
-## 通用餐廳相關 API `/api/restaurants`
-* 這些 API 主要用於系統層面的餐廳數據查詢和管理。
+This document describes the HTTP API exposed by LazyMeal.
 
-### 獲取所有餐廳 (可篩選)
-* URL：`/api/restaurants`
-* Method：`GET`
-* Description：根據提供的篩選條件，獲取所有符合條件的餐廳列表。
+- Base URL (local): `http://localhost:3000`
+- Interactive Swagger UI: `/docs`
+- Content type: `application/json`
 
-**Query Parameters**
+---
 
-* search (string, 可選): 根據餐廳名稱進行模糊搜尋。
-* cuisine (string, 可選): 餐廳菜系 (例如 中式,西式，多個菜系用逗號分隔)。
-* priceRange (string, 可選): 價格範圍 (例如 低, 中, 高)。
-* lat (number, 可選): 使用者當前緯度。
-* lon (number, 可選): 使用者當前經度。
-* radiusKm (number, 可選): 搜尋半徑，單位公里。如果提供了 lat 和 lon，將根據此半徑篩選附近的餐廳。
+## 🔐 Authentication
 
-**成功回應 (200 OK)**
+At the moment, watchlist operations use a fixed demo user (`userId = 1337`) for legacy compatibility. There is no JWT/session auth yet.
+
+---
+
+## 🧭 API Conventions
+
+- Geo filters (`lat`, `lon`, `radiusKm`) should be provided together for distance-based filtering.
+- `cuisine` supports comma-separated values (example: `Japanese,Korean`).
+- Error responses generally follow this format:
+
+```json
+{
+  "message": "Human-readable error message",
+  "error": "Optional technical details"
+}
+```
+
+---
+
+## 🍽️ Restaurants API (`/api/restaurants`)
+
+System-level restaurant query and management endpoints.
+
+### 1) Get restaurants (with optional filters)
+
+- **Method:** `GET`
+- **Path:** `/api/restaurants`
+
+#### Query Parameters
+
+| Name | Type | Required | Description |
+|---|---|---:|---|
+| `search` | string | No | Fuzzy search by restaurant name |
+| `cuisine` | string | No | Cuisine list (comma-separated) |
+| `priceRange` | string | No | Price tier (for example: `LOW`, `MEDIUM`, `HIGH`) |
+| `lat` | number | No | User latitude |
+| `lon` | number | No | User longitude |
+| `radiusKm` | number | No | Search radius in kilometers |
+
+#### 200 Response
 
 ```json
 [
-	{
-		"id": "uuid-1",
-		"name": "麥當勞-高雄鳥松餐廳",
-		"cuisine": ["美式", "速食"],
-		"priceRange": "中",
-		"latitude": 22.6596457,
-		"longitude": 120.3638982,
-		"address": "833台灣高雄市鳥松區中正路251號",
-		"phone": "07-732-1390",
-		"googlePlaceId": "ChIJpSEoBS9AbjQRhMZ8OYlllbc",
-		"rating": 4.1,
-		"userRatingsTotal": 2852,
-		"createdAt": "2023-01-01T...",
-		"updatedAt": "2023-01-01T..."
-	}
+  {
+    "id": "uuid-1",
+    "name": "McDonald's Kaohsiung Niaosong",
+    "cuisine": ["American", "Fast Food"],
+    "priceRange": "MEDIUM",
+    "latitude": 22.6596457,
+    "longitude": 120.3638982,
+    "address": "No. 251, Zhongzheng Rd., Niaosong Dist., Kaohsiung",
+    "phone": "07-732-1390",
+    "googlePlaceId": "ChIJpSEoBS9AbjQRhMZ8OYlllbc",
+    "rating": 4.1,
+    "userRatingsTotal": 2852,
+    "createdAt": "2023-01-01T00:00:00.000Z",
+    "updatedAt": "2023-01-01T00:00:00.000Z"
+  }
 ]
 ```
 
-**錯誤回應 (500 Internal Server Error)**
+#### Error Responses
+- `500 Internal Server Error`
+
+---
+
+### 2) Get one random restaurant
+
+- **Method:** `GET`
+- **Path:** `/api/restaurants/random`
+
+Uses the same query filters as `GET /api/restaurants`, then returns one random match.
+
+#### 200 Response
 
 ```json
 {
-	"message": "Error fetching restaurants",
-	"error": "..."
+  "id": "uuid-1",
+  "name": "McDonald's Kaohsiung Niaosong",
+  "cuisine": ["Fast Food"],
+  "priceRange": "MEDIUM",
+  "latitude": 22.6596457,
+  "longitude": 120.3638982,
+  "address": "No. 251, Zhongzheng Rd., Niaosong Dist., Kaohsiung",
+  "phone": "07-732-1390",
+  "googlePlaceId": "ChIJpSEoBS9AbjQRhMZ8OYlllbc",
+  "rating": 4.1,
+  "userRatingsTotal": 2852,
+  "createdAt": "2023-01-01T00:00:00.000Z",
+  "updatedAt": "2023-01-01T00:00:00.000Z"
 }
 ```
 
-### 隨機選擇餐廳
-* URL：`/api/restaurants/random`
-* Method：`GET`
-* Description：在所有符合查詢參數篩選條件的餐廳中，隨機返回一家餐廳。
+#### Error Responses
+- `404 Not Found` (no restaurant matches current filters)
+- `500 Internal Server Error`
 
-**成功回應 (200 OK)**
+---
+
+### 3) Get restaurant by ID
+
+- **Method:** `GET`
+- **Path:** `/api/restaurants/{id}`
+
+#### Path Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| `id` | string (UUID) | Restaurant UUID |
+
+#### Error Responses
+- `404 Not Found`
+- `500 Internal Server Error`
+
+---
+
+### 4) Update restaurant (admin-oriented)
+
+- **Method:** `PUT`
+- **Path:** `/api/restaurants/{id}`
+
+#### Request Body Example
 
 ```json
 {
-	"id": ""ChIJ65KkIAwFbjQRXSOTYACKSSg"",
-	"name": "麥當勞-高雄鳥松餐廳",
-	"cuisine": ["速食"],
-	"priceRange": "中",
-	"latitude": 22.6596457,
-	"longitude": 120.3638982,
-	"address": "833, Taiwan, Kaohsiung City, Niaosong District, 中正路251號",
-	"phone": "07-732-1390",
-	"googlePlaceId": "ChIJpSEoBS9AbjQRhMZ8OYlllbc",
-	"rating": 4.1,
-	"userRatingsTotal": 2852,
-	"createdAt": "2023-01-01T...",
-	"updatedAt": "2023-01-01T..."
+  "name": "McDonald's Kaohsiung Wufu",
+  "cuisine": ["Fast Food", "American"],
+  "priceRange": "HIGH",
+  "latitude": 22.6236752,
+  "longitude": 120.3021634,
+  "address": "No. 258, Wufu 2nd Rd., Xinxing Dist., Kaohsiung",
+  "phone": "09xx-xxxxxx"
 }
 ```
 
-**錯誤回應 (404 Not Found)**
+#### Error Responses
+- `404 Not Found`
+- `500 Internal Server Error`
 
-```json
-{
-	"message": "No restaurants found matching criteria."
-}
-```
+---
 
-**錯誤回應 (500 Internal Server Error)**
+### 5) Delete restaurant (admin-oriented)
 
-```json
-{
-	"message": "Error selecting random restaurant",
-	"error": "..."
-}
-```
+- **Method:** `DELETE`
+- **Path:** `/api/restaurants/{id}`
 
-### 獲取單一餐廳
-* URL：`/api/restaurants/:id`
-* Method：`GET`
-* Description：根據餐廳的 UUID 獲取其詳細資訊。
+#### Success Response
+- `204 No Content`
 
-**URL Parameters**
+#### Error Responses
+- `404 Not Found`
+- `500 Internal Server Error`
 
-| 參數   | 說明           |
-|-------|----------------|
-| id    | 餐廳的 UUID     |
+---
 
-**成功回應 (200 OK)**
+## ⭐ Watchlist API (`/api/watchlist`)
 
- (同隨機選擇餐廳的 JSON 格式)
+Personal watchlist endpoints.
 
-**錯誤回應 (404 Not Found)**
+### 1) Search restaurants from Google Places
 
-```json
-{
-	"message": "Restaurant not found."
-}
-```
+- **Method:** `GET`
+- **Path:** `/api/watchlist/search-google`
+- **Example:** `/api/watchlist/search-google?query=McDonald's&lat=22.6865&lon=120.3015`
 
-**錯誤回應 (500 Internal Server Error)**
+#### Query Parameters
 
-```json
-{
-	"message": "Error fetching single restaurant",
-	"error": "..."
-}
-```
+| Name | Type | Required | Description |
+|---|---|---:|---|
+| `query` | string | Yes | Restaurant keyword/name |
+| `lat` | number | Yes | User latitude |
+| `lon` | number | Yes | User longitude |
 
-### 更新餐廳 (管理員專用)
-* URL：`/api/restaurants/:id`
-* Method：`PUT`
-* Description：更新指定 ID 餐廳的資訊。通常用於管理後台。
-
-**URL Parameters**
-
-| 參數   | 說明           |
-|-------|----------------|
-| id    | 餐廳的 UUID     |
-
-**Request Body**
-
-```json
-{
-	"name": "McDonald's Kaohsiung Wofo",
-	"cuisine": ["速食", "美式"],
-	"priceRange": "高",
-	"latitude": 22.6236752,
-	"longitude": 120.3021634,
-	"address": "No. 258號, Wufu 2nd Rd, Sinsing District, Kaohsiung City, Taiwan 870",
-	"phone": "09xx-xxxxxx"
-	// ... more fields
-}
-```
-
-**成功回應 (200 OK)**: (返回更新後的餐廳物件)
-
-**錯誤回應 (404 Not Found)**
-
-```json
-{
-	"message": "Restaurant not found."
-}
-```
-
-**錯誤回應 (500 Internal Server Error)**
-```json
-{
-	"message": "Error updating restaurant",
-	"error": "..."
-}
-```
-
-### 刪除餐廳 (管理員專用)
-* URL：`/api/restaurants/:id`
-* Method：`DELETE`
-* Description：刪除指定 ID 的餐廳。通常用於管理後台。
-
-**URL Parameters**
-
-| 參數   | 說明           |
-|-------|----------------|
-| id    | 餐廳的 UUID     |
-
-**成功回應 (204 No Content)**: (No response body)
-
-**錯誤回應 (404 Not Found)**
-```json
-{
-	"message": "Restaurant not found."
-}
-```
-
-**錯誤回應 (500 Internal Server Error)**
-```json
-{
-	"message": "Error deleting restaurant",
-	"error": "..."
-}
-```
-
-
-## 使用者口袋名單相關 API `/api/watchlist`（KeyPoint）
-* 這些 API 專門用於管理使用者的個人化口袋名單。
-
-### 搜尋 Google Maps 餐廳（Finished）
-* URL：`/api/watchlist/search-google`
-* Method：`GET`
-* Description：根據使用者輸入的關鍵字和當前位置，向 Google Places API 發送搜尋請求，並返回相關餐廳列表。
-* Example：`/api/watchlist/search-google?&query=麥當勞&lat=22.6865&lon=120.3015`
-
-**Query Parameters**
-
-| 參數  | 說明             |
-|-------|------------------|
-| query | 餐廳名稱或關鍵字 |
-| lat   | 使用者當前緯度   |
-| lon   | 使用者當前經度   |
-
-**成功回應 (200 OK)**
+#### 200 Response
 
 ```json
 [
-	{
-		"place_id": "ChIJzW_WJgwFbjQRMgZRFE_9pgA",
-		"name": "麥當勞－高雄博愛二餐廳－設有得來速",
-		"address": "813台灣高雄市左營區博愛三路225號",
-		"latitude": 22.6742789,
-		"longitude": 120.3047002,
-		"rating": 4.1,
-		"user_ratings_total": 3842,
-		"distance_meters": 1392.74201703
-	},
-	{
-		"place_id": "ChIJ65KkIAwFbjQRXSOTYACKSSg",
-		"name": "麥當勞-高雄左營餐廳",
-		"address": "813台灣高雄市左營區左營大路81號",
-		"latitude": 22.6822493,
-		"longitude": 120.2881999,
-		"rating": 4.1,
-		"user_ratings_total": 1546,
-		"distance_meters": 1445.50109741
-	}
+  {
+    "place_id": "ChIJzW_WJgwFbjQRMgZRFE_9pgA",
+    "name": "McDonald's - Kaohsiung Boai",
+    "address": "No. 225, Boai 3rd Rd., Zuoying Dist., Kaohsiung",
+    "latitude": 22.6742789,
+    "longitude": 120.3047002,
+    "rating": 4.1,
+    "user_ratings_total": 3842,
+    "distance_meters": 1392.742
+  }
 ]
 ```
 
-**錯誤回應 (400 Bad Request)**
+#### Error Responses
+- `400 Bad Request` (missing/invalid params)
+- `500 Internal Server Error` (Google API integration failure)
+
+---
+
+### 2) Add restaurant to watchlist
+
+- **Method:** `POST`
+- **Path:** `/api/watchlist`
+
+#### Request Body Example
 
 ```json
 {
-	"message": "Missing search query."
+  "google_place_id": "ChIJzW_WJgwFbjQRMgZRFE_9pgA",
+  "name": "McDonald's - Kaohsiung Boai",
+  "address": "No. 225, Boai 3rd Rd., Zuoying Dist., Kaohsiung",
+  "latitude": 22.6742789,
+  "longitude": 120.3047002,
+  "rating": 4.1,
+  "user_ratings_total": 3842,
+  "cuisine": ["Fast Food"],
+  "price_range": "MEDIUM",
+  "phone": "07-0000-0000"
 }
 ```
 
-**錯誤回應 (500 Internal Server Error)**
+#### Success Response
+- `201 Created` (or `200 OK` depending on implementation details)
 
-```json
-{
-	"message": "Failed to search Google Maps.",
-	"error": "..."
-}
-```
+#### Error Responses
+- `400 Bad Request`
+- `404 Not Found`
+- `500 Internal Server Error`
 
-### 添加餐廳到口袋名單
-* URL：`/api/watchlist/`
-* Method：`POST`
-* Description：將 Google Maps 搜尋結果中的餐廳添加到當前使用者的口袋名單。如果餐廳尚未存在於本地資料庫，將先新增。
+---
 
-> 接收 `restaurant` 物件(body)，並在本地資料庫紀錄該餐廳資訊，並回傳完整物件 `fullRestaurant` 給前端
+### 3) Get watchlist
 
-**Request Body**
+- **Method:** `GET`
+- **Path:** `/api/watchlist`
 
-```json
-{
-    "place_id": "ChIJN64Mm1kDbjQR5JTFxQ4Cx2U",
-    "name": "麥當勞-高雄瑞隆餐廳",
-    "address": "806台灣高雄市前鎮區瑞隆路432號1樓",
-    "latitude": 22.6054811,
-    "longitude": 120.3296335,
-    "rating": 3.9,
-    "user_ratings_total": 3230
-}
-```
+Returns the current user's saved restaurants.
 
-**成功回應 (201 Created)**
+#### Error Responses
+- `500 Internal Server Error`
 
-```json
-{
-	"message": "Restaurant added to watchlist successfully!",
-	"restaurant": {
-		"id": "2125ae13-b8e3-4e7d-959e-fcf56ee23d27",
-		"userId": "1337",
-		"restaurantId": "0031759b-18f7-4e9b-94f7-961b1e299a73",
-		"addedAt": "2025-07-12T13:20:13.489Z",
-		"restaurant": {
-			"id": "0031759b-18f7-4e9b-94f7-961b1e299a73",
-			"name": "麥當勞-高雄瑞隆餐廳",
-			"cuisine": [],
-			"priceRange": null,
-			"latitude": 22.6054811,
-			"longitude": 120.3296335,
-			"address": "806台灣高雄市前鎮區瑞隆路432號1樓",
-			"phone": null,
-			"googlePlaceId": "ChIJN64Mm1kDbjQR5JTFxQ4Cx2U",
-			"rating": 3.9,
-			"userRatingsTotal": 3230,
-			"createdAt": "2025-07-12T13:20:13.487Z",
-			"updatedAt": "2025-07-12T13:20:13.487Z"
-		}
-	},
-	"fullRestaurant": {
-			"id": "0031759b-18f7-4e9b-94f7-961b1e299a73",
-			"name": "麥當勞-高雄瑞隆餐廳",
-			"cuisine": [],
-			"priceRange": null,
-			"latitude": 22.6054811,
-			"longitude": 120.3296335,
-			"address": "806台灣高雄市前鎮區瑞隆路432號1樓",
-			"phone": null,
-			"googlePlaceId": "ChIJN64Mm1kDbjQR5JTFxQ4Cx2U",
-			"rating": 3.9,
-			"userRatingsTotal": 3230,
-			"createdAt": "2025-07-12T13:20:13.487Z",
-			"updatedAt": "2025-07-12T13:20:13.487Z"
-	}
-}
-```
+---
 
-**錯誤回應 (400 Bad Request)**
-```json
-{
-    "statusCode": 400,
-    "error": "Bad Request",
-    "message": "Expected double-quoted property name in JSON at position 231 (line 9 column 1)"	// error detail
-}
-```
+### 4) Remove watchlist item by Google Place ID
 
-**錯誤回應 (409 Conflict)**
-```json
-{
-	"message": "Restaurant already in your watchlist."
-}
-```
+- **Method:** `DELETE`
+- **Path:** `/api/watchlist/{google_place_id}`
 
-**錯誤回應 (500 Internal Server Error)**
-```json
-{
-	"message": "Failed to add restaurant to watchlist.",
-	"error": "..."
-}
-```
+#### Path Parameters
 
-### 從 Google Map 連結導入餐廳
-* URL：`/api/watchlist/import-from-link`
-* Method：`POST`
-* Description：透過 Google Map 的分享連結，解析餐廳資訊並添加到使用者的口袋名單。
+| Name | Type | Description |
+|---|---|---|
+| `google_place_id` | string | Google place identifier |
 
-**Request Body**
+#### Success Response
+- `204 No Content` (or `200 OK` depending on implementation details)
 
-```json
-{
-  "link": "https://share.google/mAaFtPHFSZmOVAR6y"
-}
-```
+#### Error Responses
+- `404 Not Found`
+- `500 Internal Server Error`
 
-**成功回應 (201 Created)**
+---
 
-```json
-{
-  "message": "Restaurant imported from link and added to watchlist!",
-  "fullRestaurant": { /* Restaurant 完整物件 */ }
-}
-```
+## 🧪 Testing API Quickly
 
-**錯誤回應 (400 Bad Request)**
-```json
-{
-	"message": "Missing Google Maps link."
-}
+You can verify API behavior with Swagger UI:
 
-// or
+- `http://localhost:3000/docs`
 
-{
-	"message": "Could not extract Place ID from the provided link."
-}
-```
+Or use cURL examples:
 
-**錯誤回應 (500 Internal Server Error)**
-```json
-{
-	"message": "Failed to import restaurant from link.",
-	"error": "..."
-}
-```
-
-### 獲取使用者口袋名單（Finished）
-* URL：`/api/watchlist`
-* Method：`GET`
-* Description：獲取當前使用者收藏的所有餐廳列表。
-
-> 目前沒有管理使用者，預設是獲取 ID=1337 的口袋名單。
-
-**成功回應 (200 OK)**
-
-```json
-[
-    {
-        "id": "0031759b-18f7-4e9b-94f7-961b1e299a73",
-        "googlePlaceId": "ChIJN64Mm1kDbjQR5JTFxQ4Cx2U",
-        "name": "麥當勞-高雄瑞隆餐廳",
-        "address": "806台灣高雄市前鎮區瑞隆路432號1樓",
-        "rating": 3.9,
-        "userRatingsTotal": 3230,
-        "priceRange": null,
-        "cuisine": [],
-        "latitude": 22.6054811,
-        "longitude": 120.3296335,
-        "addedAt": "2025-07-12T13:20:13.489Z"
-    },
-    {
-        "id": "cdf166c7-b36e-4b8b-8bab-9577ed743e01",
-        "googlePlaceId": "ChIJMaim-2kFbjQRz4yV504Ve0s",
-        "name": "麥當勞-高雄民族餐廳－設有得來速",
-        "address": "813台灣高雄市左營區民族一路1026號",
-        "rating": 3.9,
-        "userRatingsTotal": 2817,
-        "priceRange": null,
-        "cuisine": [],
-        "latitude": 22.6824131,
-        "longitude": 120.3199997,
-        "addedAt": "2025-07-12T12:18:37.769Z"
-    },
-    {
-        "id": "c51a6549-e9d1-49fa-9877-51f2e9d2c441",
-        "googlePlaceId": "ChIJ48SQOvAEbjQREpDmZOhQ11U",
-        "name": "麥當勞-高雄天祥餐廳－設有得來速",
-        "address": "807台灣高雄市三民區天祥一路150號",
-        "rating": 3.9,
-        "userRatingsTotal": 2245,
-        "priceRange": null,
-        "cuisine": [],
-        "latitude": 22.6678956,
-        "longitude": 120.3188243,
-        "addedAt": "2025-07-12T12:12:58.811Z"
-    }
-]
-```
-
-**錯誤回應 (500 Internal Server Error)**
-```json
-{
-	"message": "Failed to fetch watchlist.",
-	"error": "..."
-}
-```
-
-### 從口袋名單中刪除餐廳（OK）
-* URL：`/api/watchlist/:restaurantId`
-* Method：`DELETE`
-* Description：從當前使用者的口袋名單中移除指定 ID 的餐廳。
-
-> 傳入 unique(database) ID 來刪除資料。
-
-**URL Parameters**
-
-| 參數          |  說明                   |
-|--------------|-------------------------|
-| restaurantId | 要移除的餐廳的本地資料庫 ID |
-
-**成功回應 (204 No Content)**: (No response body)
-
-**錯誤回應 (404 Not Found)**
-```json
-{
-	"message": "Restaurant not found in your watchlist."
-}
-```
-
-**錯誤回應 (500 Internal Server Error)**
-```json
-{
-	"message": "Failed to delete restaurant from watchlist.",
-	"error": "..."
-}
+```bash
+curl "http://localhost:3000/api/restaurants?search=burger"
+curl "http://localhost:3000/api/restaurants/random?cuisine=Fast%20Food"
+curl "http://localhost:3000/api/watchlist/search-google?query=sushi&lat=25.0330&lon=121.5654"
 ```
