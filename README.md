@@ -27,6 +27,42 @@ LazyMeal 是一個幫助使用者快速決定午餐/晚餐的 Web 應用程式�
 - PostgreSQL `v17+`
 - 建議安裝 PostGIS extension（支援距離查詢）
 
+## 使用 Docker Compose 啟動（建議）
+
+### 1) 準備環境變數
+可在專案根目錄建立 `.env`（供 `docker compose` 讀取）：
+
+```env
+Maps_API_KEY=YOUR_GOOGLE_PLACES_API_KEY
+```
+
+> 若未設定 `Maps_API_KEY`，與 Google Places 相關的功能將無法正常使用。
+
+### 2) 啟動所有服務
+在專案根目錄執行：
+
+```bash
+docker compose up --build
+```
+
+啟動後可使用：
+- Frontend: `http://localhost:5173`
+- Backend API: `http://localhost:3000`
+- Swagger: `http://localhost:3000/docs`
+- PostgreSQL: `localhost:5432`（帳號/密碼/DB 預設皆為 `lazymeal`）
+
+### 3) 背景執行與關閉
+```bash
+# 背景執行
+docker compose up -d --build
+
+# 停止與移除容器
+docker compose down
+
+# 同時移除資料庫 volume（清空資料）
+docker compose down -v
+```
+
 ## 快速啟動
 
 ### 1) 下載專案並安裝前端依賴
