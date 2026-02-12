@@ -3,8 +3,46 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 
 
 async def ensure_watchlist_schema(engine: AsyncEngine) -> None:
-    """Create watchlist tables for environments without executed migrations."""
+    """Create tables required by watchlist flows in fresh environments."""
     async with engine.begin() as connection:
+        await connection.execute(
+            text(
+                """
+                CREATE TABLE IF NOT EXISTS restaurants (
+                    id TEXT PRIMARY KEY,
+                    name TEXT NOT NULL,
+                    cuisine TEXT[] NOT NULL,
+                    "priceRange" TEXT,
+                    latitude DOUBLE PRECISION NOT NULL,
+                    longitude DOUBLE PRECISION NOT NULL,
+                    address TEXT,
+                    phone TEXT,
+                    "googlePlaceId" TEXT UNIQUE,
+                    rating DOUBLE PRECISION,
+                    "userRatingsTotal" INTEGER,
+                    "createdAt" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                    "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT NOW()
+                )
+                """
+            )
+        )
+        await connection.execute(
+            text(
+                """
+                CREATE INDEX IF NOT EXISTS restaurants_price_range_idx
+                ON restaurants ("priceRange")
+                """
+            )
+        )
+        await connection.execute(
+            text(
+                """
+                CREATE INDEX IF NOT EXISTS restaurants_created_at_desc_idx
+                ON restaurants ("createdAt" DESC)
+                """
+            )
+        )
+
         await connection.execute(
             text(
                 """
